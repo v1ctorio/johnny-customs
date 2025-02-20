@@ -1,3 +1,3 @@
-# Slack typescript bolt bot boilerplate
+# Johnny customs
 
-Template for slack bots in bolt.
+Hack-Club customs helper.
