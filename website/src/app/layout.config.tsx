@@ -11,15 +11,12 @@ export const baseOptions: BaseLayoutProps = {
   nav: {
     title: (
       <>
-        <svg
-          width="24"
-          height="24"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-label="Logo"
-        >
+        <img
+        src="https://cloud-2lknei65b-hack-club-bot.vercel.app/0johnny.jpg"
+        style={{height:32,width:'auto'}}
+        />
           <circle cx={12} cy={12} r={12} fill="currentColor" />
-        </svg>
-        My App
+        Johnny customs
       </>
     ),
   },
@@ -29,5 +26,9 @@ export const baseOptions: BaseLayoutProps = {
       url: '/docs',
       active: 'nested-url',
     },
+    {
+      text: 'Slack channel',
+      url: 'https://hackclub.slack.com/archives/C07JZQHQDBP'
+    }
   ],
 };
