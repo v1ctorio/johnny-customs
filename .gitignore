@@ -138,3 +138,6 @@ dist
 # bun
 .bun
 bun*
+
+*v1data.json
+*sqlite.db*
