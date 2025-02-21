@@ -1,0 +1,32 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./sqlite.db"
+}
+
+model ChargeSubmission {
+  id                    String   @id @default(uuid())
+  author               String   // Slack user ID
+  item                 String
+  country_code         String   // ISO 3166-1 alpha-2
+  declared_value       Float
+  declared_value_usd   Float
+  paid_customs         Float
+  paid_customs_usd     Float
+  submission_date      BigInt
+  additional_information String?
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt
+
+  @@index([author])
+  @@index([submission_date])
+}
