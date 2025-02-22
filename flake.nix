@@ -17,12 +17,19 @@
         nodejs
         typescript-language-server
         yarn
+        openssl
+        nodePackages_latest.prisma
           
       ];
+      env = {
+        PRISMA_QUERY_ENGINE_LIBRARY = "${pkgs.prisma-engines}/lib/libquery_engine.node";
+        PRISMA_QUERY_ENGINE_BINARY = "${pkgs.prisma-engines}/bin/query-engine";
+        PRISMA_SCHEMA_ENGINE_BINARY = "${pkgs.prisma-engines}/bin/schema-engine";
+      };
 
       shellHook = ''
-        echo "Node `${pkgs.nodejs}/bin/node --version`"
-        echo "NPM `${pkgs.nodejs}/bin/npm --version`"
+        echo "node `${pkgs.nodejs}/bin/node --version`"
+        echo "yarn `${pkgs.yarn}/bin/yarn --version`"
       '';
     };
   };
