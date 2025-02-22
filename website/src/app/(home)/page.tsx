@@ -7,10 +7,10 @@ export default function HomePage() {
       <p className="text-fd-muted-foreground">
         Click on{' '}
         <Link
-          href="/docs"
+          href="/info"
           className="text-fd-foreground font-semibold underline"
         >
-          /docs
+          /info
         </Link>{' '}
         to open the documentation.
       </p>
