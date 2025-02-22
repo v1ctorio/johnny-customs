@@ -55,5 +55,3 @@ getCurrencies()
   .catch((error) => {
     console.error(error);
   });
-
-// console.log(API_URL);

@@ -1,5 +1,6 @@
 import type { Countries } from "country-to-currency";
 
+
 type money = number
 
 export default interface submission {
