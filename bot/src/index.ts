@@ -6,15 +6,19 @@ import fs from "fs";
 import path from "path";
 import _isoModalOptions from "./utils/isoModalOptions.json" assert { type: "json" };
 import _iso2CountryCodes from "./utils/iso2CountryCodes.json" assert { type: "json" };
-import { createTypeReferenceDirectiveResolutionCache } from "typescript";
+import _countryCurrency from "./utils/countryToCurrency.json" assert { type: "json" }; 
+import _currencies from "./utils/currency.json" assert { type: "json" };
+import { createTypeReferenceDirectiveResolutionCache, ScriptKind } from "typescript";
 import { lookup } from "dns";
+import { addAbortSignal } from "stream";
+
+import prisma from "db";
+
 config();
 
-interface CountryCodes {
-  [key: string]: string;
-}
-
-const iso2CountryCodes: CountryCodes = _iso2CountryCodes;
+const iso2CountryCodes: { [key: string]: string } = _iso2CountryCodes;
+const countryCurrency: { [key: string]: string } = _countryCurrency;
+const currencies: { [key: string]: number } = _currencies;
 
 const {
   SLACK_BOT_TOKEN,
@@ -31,6 +35,12 @@ const slack = new App({
   port: 6777,
   clientSecret: SLACK_CLIENT_SECRET,
 });
+
+function toUSD(amount: number, currency: string): number {
+  const rate: number = currencies[currency] || 1;
+  amount = Math.round((amount / rate) * 100) / 100;
+  return amount;
+}
 
 slack.command(
   "/test-command",
@@ -141,23 +151,38 @@ slack.view("view_1", async ({ ack, body, view, logger, client }) => {
   await ack();
   console.log("View submitted");
 
-  const item = view.state.values.item_input.dreamy_input.value ?? "";
-  const declared = view.state.values.declared_input.dreamy_input.value ?? "";
-  const paid = view.state.values.paid_input.dreamy_input.value ?? "";
-  const iso: string = view.state.values.iso_input.dreamy_input.value ?? "";
-  const notes = view.state.values.notes_input.dreamy_input.value ?? "";
+  const item: string = view.state.values.item_input.dreamy_input.value ?? "";
+  const declared: number = parseFloat(view.state.values.declared_input.dreamy_input.value ?? "") || 0;
+  const paid: number = parseFloat(view.state.values.paid_input.dreamy_input.value ?? "") || 0;
+  const iso: string = (view.state.values.iso_input.dreamy_input.value ?? "").toUpperCase();
+  const notes: string = view.state.values.notes_input.dreamy_input.value ?? "";
+  const currency = countryCurrency[iso] || "Unknown currency";
 
 
   const country = iso
     ? iso2CountryCodes[iso] || "Unknown country"
     : "Unknown country";
 
+	if (country === "Unknown country" || currency === "Unknown currency") {
+    await client.chat.postEphemeral({
+      channel: "C08EL3S67BN",
+      user: body.user.id,
+      text: `The provided ISO2 country code (${iso}) is invalid. Please refer to [this link](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements) for valid codes.`,
+    });
+		return;
+	}
+  
+  const paidUSD = toUSD(paid, currency);
+
+
   logger.info("View submitted");
   logger.info(`Item: ${item}`);
-  logger.info(`Declared Value: ${declared}`);
-  logger.info(`Paid Customs: ${paid}`);
+  logger.info(`Declared Value: ${declared} (${currency})`);
+  logger.info(`Paid Customs: ${paid} (${currency})`);
+  logger.info(`Paid Customs: ${paidUSD} (USD)`);
   logger.info(`ISO2 Country Code: ${iso}`);
   logger.info(`Country: ${country}`);
+  logger.info(`Currency: ${currency}`);
   logger.info(`Notes: ${notes}`);
 });
 
