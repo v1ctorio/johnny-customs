@@ -12,8 +12,11 @@ import { createTypeReferenceDirectiveResolutionCache, ScriptKind } from "typescr
 import { lookup } from "dns";
 import { addAbortSignal } from "stream";
 
-import prisma from "db";
+// import prisma from "db";
+import { count } from "console";
+import { PrismaClient } from "@prisma/client";
 
+const prisma = new PrismaClient();
 config();
 
 const iso2CountryCodes: { [key: string]: string } = _iso2CountryCodes;
@@ -157,7 +160,7 @@ slack.view("view_1", async ({ ack, body, view, logger, client }) => {
   const iso: string = (view.state.values.iso_input.dreamy_input.value ?? "").toUpperCase();
   const notes: string = view.state.values.notes_input.dreamy_input.value ?? "";
   const currency = countryCurrency[iso] || "Unknown currency";
-
+  const user = body.user.id;
 
   const country = iso
     ? iso2CountryCodes[iso] || "Unknown country"
@@ -171,23 +174,51 @@ slack.view("view_1", async ({ ack, body, view, logger, client }) => {
     });
 		return;
 	}
-  
+
+  const declaredUSD = toUSD(declared, currency);
   const paidUSD = toUSD(paid, currency);
 
 
   logger.info("View submitted");
   logger.info(`Item: ${item}`);
   logger.info(`Declared Value: ${declared} (${currency})`);
+
   logger.info(`Paid Customs: ${paid} (${currency})`);
   logger.info(`Paid Customs: ${paidUSD} (USD)`);
   logger.info(`ISO2 Country Code: ${iso}`);
   logger.info(`Country: ${country}`);
   logger.info(`Currency: ${currency}`);
   logger.info(`Notes: ${notes}`);
+
+  try {
+
+    await prisma.chargeSubmission.create({
+    data: {
+      author: user,
+      item: item,
+      country_code: iso,
+      country: country,
+      currency: currency,
+      declared_value: declared,
+      declared_value_usd: declaredUSD,  
+      paid_customs: paid,
+      paid_customs_usd: paidUSD,
+      additional_information: notes,
+            },
+          });
+        } catch (error) {
+          logger.error(error);
+        }
 });
 
 (async () => {
   await slack.start();
   console.log("Slack bot is running");
+  try {
+    const submissions = await prisma.chargeSubmission.findMany();
+    console.log("All submissions:", submissions);
+  } catch (error) {
+    console.error("Error fetching submissions:", error);
+  }
 })();
 
