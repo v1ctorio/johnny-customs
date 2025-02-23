@@ -14,18 +14,20 @@ datasource db {
 }
 
 model ChargeSubmission {
-  id                    String   @id @default(uuid())
-  author               String   // Slack user ID
-  item                 String
-  country_code         String   // ISO 3166-1 alpha-2
-  declared_value       Float
-  declared_value_usd   Float
-  paid_customs         Float
-  paid_customs_usd     Float
-  submission_date      BigInt
-  additional_information String?
-  created_at           DateTime @default(now())
-  updated_at           DateTime @updatedAt
+  id                      String   @id @default(uuid())
+  author                  String   // Slack user ID
+  item                    String
+  country_code            String   // ISO 3166-1 alpha-2
+  country                 String
+  currency                String
+  declared_value          Float
+  declared_value_usd      Float
+  paid_customs            Float
+  paid_customs_usd        Float
+  submission_date         DateTime @default(now())
+  additional_information  String?
+  created_at              DateTime @default(now())
+  updated_at              DateTime @updatedAt
 
   @@index([author])
   @@index([submission_date])

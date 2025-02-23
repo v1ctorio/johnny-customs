@@ -16,7 +16,12 @@
         "db:init": "yarn workspace db run prisma db push",
         "db:migrate": "yarn workspace db run prisma migrate dev",
         "db:importexisting": "yarn db:init && tsx bot/src/utils/importExisting.ts",
-        "web:dev": "yarn workspace website dev"
+        "web:dev": "yarn workspace website dev",
+        "bot:build": "cd bot && npx tsc",
+        "bot:biome": "cd bot && npx @biomejs/biome check --write ./src",
+        "bot:start": "cd bot && node dist/index.js",
+        "bot:bot": "cd bot && npx tsc && node dist/index.js",
+        "bot:currency": "cd bot && npx tsc && node dist/utils/currency.js"
     },
     "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
     "devDependencies": {
