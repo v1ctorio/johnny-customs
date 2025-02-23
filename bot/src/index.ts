@@ -2,18 +2,11 @@ import Slack from "@slack/bolt";
 const { App, subtype } = Slack;
 
 import { config } from "dotenv";
-import fs from "fs";
-import path from "path";
-import _isoModalOptions from "./utils/isoModalOptions.json" assert { type: "json" };
 import _iso2CountryCodes from "./utils/iso2CountryCodes.json" assert { type: "json" };
 import _countryCurrency from "./utils/countryToCurrency.json" assert { type: "json" }; 
 import _currencies from "./utils/currency.json" assert { type: "json" };
-import { createTypeReferenceDirectiveResolutionCache, ScriptKind } from "typescript";
-import { lookup } from "dns";
-import { addAbortSignal } from "stream";
 
 // import prisma from "db";
-import { count } from "console";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -41,8 +34,7 @@ const slack = new App({
 
 function toUSD(amount: number, currency: string): number {
   const rate: number = currencies[currency] || 1;
-  amount = Math.round((amount / rate) * 100) / 100;
-  return amount;
+  return Math.round((amount / rate) * 100) / 100;
 }
 
 slack.command(
@@ -155,8 +147,8 @@ slack.view("view_1", async ({ ack, body, view, logger, client }) => {
   console.log("View submitted");
 
   const item: string = view.state.values.item_input.dreamy_input.value ?? "";
-  const declared: number = parseFloat(view.state.values.declared_input.dreamy_input.value ?? "") || 0;
-  const paid: number = parseFloat(view.state.values.paid_input.dreamy_input.value ?? "") || 0;
+  const declared: number = Number.parseFloat(view.state.values.declared_input.dreamy_input.value ?? "") || 0;
+  const paid: number = Number.parseFloat(view.state.values.paid_input.dreamy_input.value ?? "") || 0;
   const iso: string = (view.state.values.iso_input.dreamy_input.value ?? "").toUpperCase();
   const notes: string = view.state.values.notes_input.dreamy_input.value ?? "";
   const currency = countryCurrency[iso] || "Unknown currency";

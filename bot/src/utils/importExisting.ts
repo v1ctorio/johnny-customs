@@ -9,6 +9,7 @@ const interfaceString = `interface submission {
   author: string // Slack ID
   item: string; //What item did you pay customs for
   country_code: Countries //ISO 3166-1 alpha-2 country code
+  currency: string //ISO 4217 currency code
   declared_value: money
   declared_value_usd: money
   paid_customs: money
@@ -57,8 +58,9 @@ async function importData() {
           const aiResponse =
             await askAI(`Convert the following json object to be according to the typescript interface.
               ${interfaceString}
-              type "money" is number. convert country codes to ISO 3166-1 alpha-2 country codes. return ONLY the treated json object
-              and nothing else.
+              type "money" is number. convert country codes to ISO 3166-1 alpha-2 country codes.
+              type "currency" is ISO 4217 currency code.
+              return ONLY the treated json object and nothing else.
               Here's the json object: ${JSON.stringify(submission)}
               MAKE SURE YOU ARE RETURNING A VALID JSON OBJECT, ACCORDING TO THE TYPESCRIPT INTERFACE AND THE JSON SPEC.`);
           const cleaned = aiResponse.replaceAll("```", "").replace("json", "");
@@ -101,7 +103,11 @@ async function importData() {
     await Promise.all(
       validSubmissions.map((submission) =>
         prisma.chargeSubmission.create({
-          data: submission,
+          data: {
+            ...submission,
+            country: new Intl.DisplayNames(['en'], { type: 'region' }).of(submission.country_code) || submission.country_code,
+            submission_date: new Date(), // Or convert from UNIX timestamp if needed
+          }
         })
       )
     );
