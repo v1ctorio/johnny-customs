@@ -1,34 +1,37 @@
 import countryToCurrency from "country-to-currency";
-import type submission from "../types/submission.js";
+import type { apiSubmission as submission } from "../../types/api_submission.js";
 import _v1Data from "./v1data.json" assert { type: "json" };
 import prisma from "db";
 import { convertCurrency } from "./convert.js";
 import { askAI } from "./ai.js";
 
-const interfaceString = `interface submission {
-  author: string // Slack ID
-  item: string; //What item did you pay customs for
-  country_code: Countries //ISO 3166-1 alpha-2 country code
-  currency: string //ISO 4217 currency code
-  declared_value: money
-  declared_value_usd: money
-  paid_customs: money
-  paid_customs_usd: money
-  submission_date: number //UNIX timestamp
-  additional_information: string //notes 
+const interfaceString = `{
+    user: string;
+    item: string;
+    submission_date: number;
+    declared_value: number;
+    declared_value_usd: number;
+    paid_customs: number;
+    paid_customs_usd: number;
+    country_code: string;
+    currency: string;
+    additional_information?: string | undefined;
 }`;
 
 async function importData() {
   try {
     const v1Data = _v1Data.map((submission) => {
+      const currency = countryToCurrency[submission["Country code (ISO A2)"].replace('IND', 'IN')] || '';
       return {
-        author: submission.Author,
+        user: submission.Author,
         item: submission["What did you pay customs for?"],
         country_code: submission["Country code (ISO A2)"].replace('IND', 'IN'),
-        declared_value: submission["What was the declared value?"],
-        paid_customs: submission["Paid customs"],
-        paid_customs_usd: submission["Paid customs (USD)"],
+        declared_value: Number(submission["What was the declared value?"]),
+        declared_value_usd: 0,
+        paid_customs: Number(submission["Paid customs"]),
+        paid_customs_usd: Number(submission["Paid customs (USD)"]),
         submission_date: 0,
+        currency: currency,
         additional_information: submission.Notes,
       };
     }) as submission[];
@@ -107,6 +110,7 @@ async function importData() {
             ...submission,
             country: new Intl.DisplayNames(['en'], { type: 'region' }).of(submission.country_code) || submission.country_code,
             submission_date: new Date(), // Or convert from UNIX timestamp if needed
+            author: submission.user,
           }
         })
       )

@@ -100,6 +100,6 @@
 	"exclude": [
 		"node_modules",
 		"dist",
-		"src/utils/importExisting.ts"		
+		"../api/src/database/utils/importExisting.ts"		
 	]
 }

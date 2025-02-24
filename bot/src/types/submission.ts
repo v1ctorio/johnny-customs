@@ -3,7 +3,7 @@ import type { Countries } from "country-to-currency";
 
 type money = number
 
-export default interface submission {
+export interface submission {
     author: string // Slack ID
     item: string; //What item did you pay customs for
     country_code: Countries //ISO 3166-1 alpha-2 country code
