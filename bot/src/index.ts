@@ -6,10 +6,8 @@ import _iso2CountryCodes from "./utils/iso2CountryCodes.json" assert { type: "js
 import _countryCurrency from "./utils/countryToCurrency.json" assert { type: "json" }; 
 import _currencies from "./utils/currency.json" assert { type: "json" };
 
-// import prisma from "db";
-import { PrismaClient } from "@prisma/client";
+import prisma from "db";
 
-const prisma = new PrismaClient();
 config();
 
 const iso2CountryCodes: { [key: string]: string } = _iso2CountryCodes;
