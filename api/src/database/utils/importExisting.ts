@@ -21,17 +21,18 @@ const interfaceString = `{
 async function importData() {
   try {
     const v1Data = _v1Data.map((submission) => {
-      const country_code = submission["Country code (ISO A2)"].replace('IND', 'IN');
+      const currency = countryToCurrency[submission["Country code (ISO A2)"].replace('IND', 'IN')] || '';
       return {
         user: submission.Author,
         item: submission["What did you pay customs for?"],
         country_code: submission["Country code (ISO A2)"].replace('IND', 'IN'),
-        declared_value: submission["What was the declared value?"],
-        paid_customs: submission["Paid customs"],
-        paid_customs_usd: submission["Paid customs (USD)"],
+        declared_value: Number(submission["What was the declared value?"]),
+        declared_value_usd: 0,
+        paid_customs: Number(submission["Paid customs"]),
+        paid_customs_usd: Number(submission["Paid customs (USD)"]),
         submission_date: 0,
+        currency: currency,
         additional_information: submission.Notes,
-        currency: countryToCurrency[country_code],
       };
     }) as submission[];
 
@@ -107,9 +108,9 @@ async function importData() {
         prisma.chargeSubmission.create({
           data: {
             ...submission,
-            author: submission.user,
             country: new Intl.DisplayNames(['en'], { type: 'region' }).of(submission.country_code) || submission.country_code,
-            submission_date: new Date(),
+            submission_date: new Date(), // Or convert from UNIX timestamp if needed
+            author: submission.user,
           }
         })
       )

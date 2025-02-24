@@ -141,3 +141,4 @@ bun*
 
 *v1data.json
 *sqlite.db*
+.vscode

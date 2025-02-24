@@ -5,9 +5,7 @@ import { init } from 'shrimple-env';
 import _isoModalOptions from "./utils/isoModalOptions.json" with { type: "json" };
 import _currencies from "./utils/currency.json" with { type: "json" };
 import _iso2CountryCodes from "./utils/iso2CountryCodes.json" with { type: "json" };
-import _countryCurrency from "./utils/countryToCurrency.json" with { type: "json" };
-import prisma from 'db';
-
+import _countryCurrency from "./utils/countryToCurrency.json" with { type: "json" }; 
 await init({
 	envFiles: ['../.env']
 })

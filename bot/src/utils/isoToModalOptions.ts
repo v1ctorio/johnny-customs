@@ -1,5 +1,5 @@
 import { assert } from 'console';
-import _isoList from './iso3166-A2.json' assert { type: 'json' };
+import _isoList from './iso2CountryCodes.json' assert { type: 'json' };
 import { writeFile } from 'fs';
 
 interface ISOList {
