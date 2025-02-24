@@ -12,7 +12,7 @@ export default async function addSubmission(database: LibSQLDatabase,submission:
 	if (isValidCountryCode(submission.country_code) === false) {
 		throw new Error("Invalid country code");
 	}
-	var currency_code = 'EUR' //TODO map country code to currency code 
+	const currency_code = 'EUR' //TODO map country code to currency code 
 
 	const declared_value_usd = await convertCurrency(currency_code, 'USD', submission.declared_value);
 	const paid_customs_usd = await convertCurrency(currency_code, 'USD', submission.paid_customs);
@@ -29,7 +29,7 @@ export default async function addSubmission(database: LibSQLDatabase,submission:
 		additional_information: submission.additional_information,
 	}
 
-	const db_submission = await database.insert(submissions_table).values(new_submission).execute();
+	await database.insert(submissions_table).values(new_submission).execute();
 
 	//console.log(`Added submission with ID ${JSON.stringify(db_submission)}`);
 	return true;

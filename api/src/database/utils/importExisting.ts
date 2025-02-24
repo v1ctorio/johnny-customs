@@ -1,27 +1,29 @@
 import countryToCurrency from "country-to-currency";
-import type submission from "../../../../bot/src/types/submission.js";
+import type { apiSubmission as submission } from "../../types/api_submission.js";
 import _v1Data from "./v1data.json" assert { type: "json" };
 import prisma from "db";
 import { convertCurrency } from "./convert.js";
-import { askAI } from "../../../../bot/src/utils/ai.js";
+import { askAI } from "./ai.js";
 
-const interfaceString = `interface submission {
-  author: string // Slack ID
-  item: string; //What item did you pay customs for
-  country_code: Countries //ISO 3166-1 alpha-2 country code
-  declared_value: money
-  declared_value_usd: money
-  paid_customs: money
-  paid_customs_usd: money
-  submission_date: number //UNIX timestamp
-  additional_information: string //notes 
+const interfaceString = `{
+    user: string;
+    item: string;
+    submission_date: number;
+    declared_value: number;
+    declared_value_usd: number;
+    paid_customs: number;
+    paid_customs_usd: number;
+    country_code: string;
+    currency: string;
+    additional_information?: string | undefined;
 }`;
 
 async function importData() {
   try {
     const v1Data = _v1Data.map((submission) => {
+      const country_code = submission["Country code (ISO A2)"].replace('IND', 'IN');
       return {
-        author: submission.Author,
+        user: submission.Author,
         item: submission["What did you pay customs for?"],
         country_code: submission["Country code (ISO A2)"].replace('IND', 'IN'),
         declared_value: submission["What was the declared value?"],
@@ -29,6 +31,7 @@ async function importData() {
         paid_customs_usd: submission["Paid customs (USD)"],
         submission_date: 0,
         additional_information: submission.Notes,
+        currency: countryToCurrency[country_code],
       };
     }) as submission[];
 
@@ -57,8 +60,9 @@ async function importData() {
           const aiResponse =
             await askAI(`Convert the following json object to be according to the typescript interface.
               ${interfaceString}
-              type "money" is number. convert country codes to ISO 3166-1 alpha-2 country codes. return ONLY the treated json object
-              and nothing else.
+              type "money" is number. convert country codes to ISO 3166-1 alpha-2 country codes.
+              type "currency" is ISO 4217 currency code.
+              return ONLY the treated json object and nothing else.
               Here's the json object: ${JSON.stringify(submission)}
               MAKE SURE YOU ARE RETURNING A VALID JSON OBJECT, ACCORDING TO THE TYPESCRIPT INTERFACE AND THE JSON SPEC.`);
           const cleaned = aiResponse.replaceAll("```", "").replace("json", "");
@@ -101,7 +105,12 @@ async function importData() {
     await Promise.all(
       validSubmissions.map((submission) =>
         prisma.chargeSubmission.create({
-          data: submission,
+          data: {
+            ...submission,
+            author: submission.user,
+            country: new Intl.DisplayNames(['en'], { type: 'region' }).of(submission.country_code) || submission.country_code,
+            submission_date: new Date(),
+          }
         })
       )
     );

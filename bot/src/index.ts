@@ -1,11 +1,11 @@
 import Slack from "@slack/bolt";
 const { App, subtype } = Slack;
 
-import { config } from "dotenv";
-import fs from "fs";
-import path from "path";
-import _isoModalOptions from "./utils/isoModalOptions.json" assert { type: "json" };
-config();
+import { init } from 'shrimple-env';
+import _isoModalOptions from "./utils/isoModalOptions.json" with { type: "json" };
+await init({
+	envFiles: ['../.env']
+})
 
 const {
   SLACK_BOT_TOKEN,

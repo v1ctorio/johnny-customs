@@ -18,7 +18,8 @@
 		"country-to-currency": "^2.0.2",
 		"db": "file:../db",
 		"dotenv": "^16.4.5",
-		"dotenv-vault": "^1.26.2"
+		"dotenv-vault": "^1.26.2",
+		"shrimple-env": "^1.0.1"
 	},
 	"type": "module"
 }
