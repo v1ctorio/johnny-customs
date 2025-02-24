@@ -1,9 +1,9 @@
 import countryToCurrency from "country-to-currency";
-import type submission from "../types/submission.js";
+import type submission from "../../../../bot/src/types/submission.js";
 import _v1Data from "./v1data.json" assert { type: "json" };
 import prisma from "db";
 import { convertCurrency } from "./convert.js";
-import { askAI } from "./ai.js";
+import { askAI } from "../../../../bot/src/utils/ai.js";
 
 const interfaceString = `interface submission {
   author: string // Slack ID

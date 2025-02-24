@@ -1,5 +1,11 @@
 import { Hono } from 'hono'
-import prisma from 'db'
+
+import drizzle from './database';
+import addSubmission from './database/functions/addSubmission';
+import { apiSubmission, apiSubmissionSchema } from './types/api_submission';
+import listSubmissions from './database/functions/listSubmissions';
+
+const API_KEY = "supersecretapikey";
 
 const app = new Hono()
 
@@ -8,8 +14,45 @@ app.get('/', (c) => {
 })
 
 app.get('/submissions', async (c) => {
-	const users = await prisma.user.findMany()
-	return c.json(users)
+	const page = Number(c.req.query('page')) || 1;
+	const limit = Number(c.req.query('limit')) || 20;
+
+	const submissions = await listSubmissions(drizzle,{
+		skip: (page - 1) * limit,
+		take: limit,
+	});
+
+	return c.json(submissions);
 })
+
+app.post('/submissions/add', async (c) => {
+	const apiKey = c.req.header('x-api-key');
+	if (apiKey !== API_KEY) {
+		return c.json({ error: 'Unauthorized' }, 401);
+	}
+
+	const body = await c.req.json();
+	
+	let submission: apiSubmission;
+	try {
+		submission = apiSubmissionSchema.parse(body);
+	} catch (error) {
+		return c.json({ error: 'Invalid submission' }, 400);
+	}
+
+
+	if (!submission) return;
+
+	try {
+		await addSubmission(drizzle, submission);
+	}
+	catch (error) {
+		return c.json({ error: 'Internal server error' }, 500);
+	}
+
+
+});
+
+
 
 export default app

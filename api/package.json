@@ -9,7 +9,13 @@
     "dev": "npx tsc && node dist/index.js"
   },
   "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "drizzle-orm": "^0.39.3",
     "hono": "^4.7.2",
-    "db": "file:../db"
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.30.4",
+    "tsx": "^4.19.3"
   }
 }
