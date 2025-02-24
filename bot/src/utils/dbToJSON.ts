@@ -1,6 +1,6 @@
 import prisma from "db";
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 
 const submissions = await prisma.chargeSubmission.findMany();
 
