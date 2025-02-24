@@ -1,7 +1,7 @@
 import axios from "axios";
 
 import { config } from "dotenv-vault";
-import fs from "fs";
+import fs from "node:fs";
 config();
 
 const { EXCHANGE_API_KEY } = process.env;
@@ -16,6 +16,7 @@ interface Currency {
 
 const API_URL = `https://v6.exchangerate-api.com/v6/${EXCHANGE_API_KEY}/latest/USD`;
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export async function getCurrencies(): Promise<any> {
   try {
     const response = await axios.get(API_URL);
@@ -35,8 +36,8 @@ getCurrencies()
 
     const rates = currenciesRequest.conversion_rates;
     console.log(rates);
-    console.log(rates["USD"]);
-    if (rates["USD"] == 1) {
+    console.log(rates.USD);
+    if (rates.USD === 1) {
       fs.writeFile(
         "src/utils/currency.json",
         JSON.stringify(rates, null, 2),
