@@ -15,6 +15,8 @@ export default async function addSubmission(submission: apiSubmission) {
 	const declared_value_usd = await convertCurrency(currency_code, 'USD', submission.declared_value);
 	const paid_customs_usd = await convertCurrency(currency_code, 'USD', submission.paid_customs);
 
+	const country_full_name = iso2Country[submission.country_code];
+
 	const new_submission: typeof submissions_table.$inferInsert = {
 		user: submission.user,
 		item: submission.item,
@@ -24,6 +26,7 @@ export default async function addSubmission(submission: apiSubmission) {
 		paid_customs: submission.paid_customs,
 		paid_customs_usd,
 		country_code: submission.country_code,
+		country_full_name,
 		additional_information: submission.additional_information,
 	}
 
