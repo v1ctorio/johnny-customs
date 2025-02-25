@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import drizzle from './database';
+import { serve } from '@hono/node-server'
 import addSubmission from './database/functions/addSubmission';
 import { type apiSubmission, apiSubmissionSchema } from './types/api_submission';
 import listSubmissions from './database/functions/listSubmissions';
@@ -45,4 +46,7 @@ app.post('/submissions/add', async (c) => {
 	}
 });
 
+serve(app, (info) => {
+  console.log(`Listening on http://localhost:${info.port}`) 
+})
 export default app

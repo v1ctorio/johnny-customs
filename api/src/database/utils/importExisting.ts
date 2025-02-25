@@ -1,3 +1,4 @@
+//!BROKEN
 import countryToCurrency from "country-to-currency";
 import type { apiSubmission as submission } from "../../types/api_submission.js";
 import _v1Data from "./v1data.json" assert { type: "json" };
