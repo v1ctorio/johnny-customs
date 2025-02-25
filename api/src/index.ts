@@ -1,5 +1,4 @@
 import { Hono } from 'hono'
-
 import drizzle from './database';
 import addSubmission from './database/functions/addSubmission';
 import { type apiSubmission, apiSubmissionSchema } from './types/api_submission';
@@ -33,26 +32,17 @@ app.post('/submissions/add', async (c) => {
 
 	const body = await c.req.json();
 	
-	let submission: apiSubmission;
-	try {
-		submission = apiSubmissionSchema.parse(body);
-	} catch (error) {
+	const submission = apiSubmissionSchema.safeParse(body);
+	if (!submission.success) {
 		return c.json({ error: 'Invalid submission' }, 400);
 	}
 
-
-	if (!submission) return;
-
 	try {
-		await addSubmission(drizzle, submission);
+		await addSubmission(drizzle, submission.data);
 	}
 	catch (error) {
 		return c.json({ error: 'Internal server error' }, 500);
 	}
-
-
 });
-
-
 
 export default app
