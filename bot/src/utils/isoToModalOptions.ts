@@ -6,14 +6,6 @@ interface ISOList {
 	[key: string]: string;
 }
 
-// {
-// 	"text": {
-// 		"type": "plain_text",
-// 		"text": "India"
-// 	},
-// 	"value": "IN"
-// },
-
 function isoToModalOptions(): any {
 	const isoList = _isoList as ISOList;
 	const options = Object.entries(isoList).map(([key, value]) => {
