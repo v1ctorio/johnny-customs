@@ -14,8 +14,8 @@
         "typescript": "^5.7.3"
     },
     "scripts": {
-        "db:init": "yarn workspace db run prisma db push",
-        "db:migrate": "yarn workspace db run prisma migrate dev",
+        "db:init": "yarn workspace @johnny-customs/api drizzle-kit migrate",
+        "db:migrate": "yarn workspace @johnny-customs/api drizzle-kit generate",
         "db:importexisting": "yarn db:init && tsx api/src/utils/importExisting.ts",
         "web:dev": "yarn workspace website dev",
         "bot:build": "yarn workspace @johnny-customs/slack-bot run build",

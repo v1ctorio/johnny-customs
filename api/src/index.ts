@@ -16,7 +16,7 @@ app.get('/submissions', async (c) => {
 	const page = Number(c.req.query('page')) || 1;
 	const limit = Number(c.req.query('limit')) || 20;
 
-	const submissions = await listSubmissions(drizzle,{
+	const submissions = await listSubmissions({
 		skip: (page - 1) * limit,
 		take: limit,
 	});
@@ -38,7 +38,7 @@ app.post('/submissions/add', async (c) => {
 	}
 
 	try {
-		await addSubmission(drizzle, submission.data);
+		await addSubmission(submission.data);
 	}
 	catch (error) {
 		return c.json({ error: 'Internal server error' }, 500);

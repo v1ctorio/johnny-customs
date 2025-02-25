@@ -1,9 +1,10 @@
 import countryToCurrency from "country-to-currency";
 import type { apiSubmission as submission } from "../../types/api_submission.js";
 import _v1Data from "./v1data.json" assert { type: "json" };
-import prisma from "db";
+import database from "../index.js";
 import { convertCurrency } from "./convert.js";
 import { askAI } from "./ai.js";
+import { submissions_table } from "../schema.js";
 
 const interfaceString = `{
     user: string;
@@ -105,14 +106,7 @@ async function importData() {
     // import valid submissions
     await Promise.all(
       validSubmissions.map((submission) =>
-        prisma.chargeSubmission.create({
-          data: {
-            ...submission,
-            country: new Intl.DisplayNames(['en'], { type: 'region' }).of(submission.country_code) || submission.country_code,
-            submission_date: new Date(), // Or convert from UNIX timestamp if needed
-            author: submission.user,
-          }
-        })
+        database.insert(submissions_table).values(submission).execute()
       )
     );
 

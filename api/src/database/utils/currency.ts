@@ -1,5 +1,3 @@
-import axios from "axios";
-
 import { config } from "dotenv-vault";
 import fs from "node:fs";
 config();
@@ -19,8 +17,11 @@ const API_URL = `https://v6.exchangerate-api.com/v6/${EXCHANGE_API_KEY}/latest/U
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export async function getCurrencies(): Promise<any> {
   try {
-    const response = await axios.get(API_URL);
-    return response.data;
+    const response = await fetch(API_URL);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
   } catch (error) {
     console.error("Error fetching currency data:", error);
     throw error;
@@ -50,7 +51,7 @@ getCurrencies()
         }
       );
     } else {
-      console.error("Error fetching data: USD is not 1"); // Just to be safe
+      console.error("Error fetching data: USD is not 1");
     }
   })
   .catch((error) => {
