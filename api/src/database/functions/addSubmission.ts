@@ -1,8 +1,8 @@
-import type { apiSubmission } from '../../types/api_submission';
-import database from '../index';
+import type { apiSubmission } from '../../types/api_submission.ts';
+import database from '../index.js';
 
-import { submissions_table } from '../schema';
-import { convertCurrency } from '../utils/convert';
+import { submissions_table } from '../schema.js';
+import { convertCurrency } from '../utils/convert.js';
 
 export default async function addSubmission(submission: apiSubmission) {
 	if (isValidCountryCode(submission.country_code) === false) {

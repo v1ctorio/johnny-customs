@@ -1,8 +1,7 @@
 import { Hono } from 'hono'
-import drizzle from './database';
-import addSubmission from './database/functions/addSubmission';
-import { type apiSubmission, apiSubmissionSchema } from './types/api_submission';
-import listSubmissions from './database/functions/listSubmissions';
+import addSubmission from './database/functions/addSubmission.js';
+import { apiSubmissionSchema } from './types/api_submission.js';
+import listSubmissions from './database/functions/listSubmissions.js';
 
 const API_KEY = "supersecretapikey";
 
@@ -44,5 +43,10 @@ app.post('/submissions/add', async (c) => {
 		return c.json({ error: 'Internal server error' }, 500);
 	}
 });
+
+if ((typeof process !== 'undefined') && (process.release.name === 'node')) {
+	const {serve} = await import('@hono/node-server')
+	serve(app, i => console.log(`Server listening on port ${i.port}`))
+}
 
 export default app
