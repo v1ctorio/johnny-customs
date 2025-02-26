@@ -1,3 +1,4 @@
+import countryToCurrency from 'country-to-currency';
 import type { apiSubmission } from '../../types/api_submission';
 import database from '../index';
 
@@ -10,8 +11,8 @@ export default async function addSubmission(submission: apiSubmission) {
 	if (isValidCountryCode(submission.country_code) === false) {
 		throw new Error("Invalid country code");
 	}
-	const currency_code = 'EUR' //TODO map country code to currency code 
 
+	const currency_code = countryToCurrency[submission.country_code];
 	const declared_value_usd = await convertCurrency(currency_code, 'USD', submission.declared_value);
 	const paid_customs_usd = await convertCurrency(currency_code, 'USD', submission.paid_customs);
 

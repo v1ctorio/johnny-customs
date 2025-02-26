@@ -6,15 +6,14 @@ import database from "../index.js";
 import { convertCurrency } from "./convert.js";
 import { askAI } from "./ai.js";
 import { submissions_table } from "../schema.js";
+import addSubmission from "../functions/addSubmission.js";
 
 const interfaceString = `{
     user: string;
     item: string;
     submission_date: number;
     declared_value: number;
-    declared_value_usd: number;
     paid_customs: number;
-    paid_customs_usd: number;
     country_code: string;
     currency: string;
     additional_information?: string | undefined;
@@ -78,18 +77,7 @@ async function importData() {
             );
           }
 
-          processedSubmission.declared_value_usd = await convertCurrency(
-            currency,
-            "USD",
-            processedSubmission.declared_value
-          );
-          if (processedSubmission.paid_customs_usd === 0) {
-            processedSubmission.paid_customs_usd = await convertCurrency(
-              currency,
-              "USD",
-              processedSubmission.paid_customs
-            );
-          }
+
 
           return processedSubmission;
         } catch (error) {
@@ -106,8 +94,8 @@ async function importData() {
 
     // import valid submissions
     await Promise.all(
-      validSubmissions.map((submission) =>
-        database.insert(submissions_table).values(submission).execute()
+      validSubmissions.map( async (submission) =>
+        await addSubmission(submission)
       )
     );
 
