@@ -77,7 +77,9 @@ app.get('/submissions/:id', async (c) => {
 })
 
 
-serve(app, (info) => {
-  console.log(`Listening on http://localhost:${info.port}`) 
-})
+if ((typeof process !== 'undefined') && (process.release.name === 'node')) {
+	const {serve} = await import('@hono/node-server')
+	serve(app, i => console.log(`Server listening on port ${i.port}`))
+}
+
 export default app

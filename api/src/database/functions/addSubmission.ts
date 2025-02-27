@@ -2,8 +2,8 @@ import countryToCurrency from 'country-to-currency';
 import type { apiSubmission } from '../../types/api_submission';
 import database from '../index';
 
-import { submissions_table } from '../schema';
-import { convertCurrency } from '../utils/convert';
+import { submissions_table } from '../schema.js';
+import { convertCurrency } from '../utils/convert.js';
 
 import iso2Country from '../utils/iso2CountryCodes.json' with { type: 'json' };
 
