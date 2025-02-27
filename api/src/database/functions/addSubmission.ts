@@ -1,22 +1,20 @@
-import countryToCurrency from 'country-to-currency';
 import type { apiSubmission } from '../../types/api_submission';
 import database from '../index';
 
-import { submissions_table } from '../schema.js';
-import { convertCurrency } from '../utils/convert.js';
-
-import iso2Country from '../utils/iso2CountryCodes.json' with { type: 'json' };
-
+import countryToCurrency from 'country-to-currency';
+import { submissions_table } from '../schema';
+import { convertCurrency } from '../utils/convert';
+import iso2Country from '../utils/iso2CountryCodes.json' 
 export default async function addSubmission(submission: apiSubmission) {
 	if (isValidCountryCode(submission.country_code) === false) {
 		throw new Error("Invalid country code");
 	}
 
-	const currency_code = countryToCurrency[submission.country_code];
+	const currency_code = countryToCurrency[submission.country_code as keyof typeof countryToCurrency];
 	const declared_value_usd = await convertCurrency(currency_code, 'USD', submission.declared_value);
 	const paid_customs_usd = await convertCurrency(currency_code, 'USD', submission.paid_customs);
 
-	const country_full_name = iso2Country[submission.country_code];
+	const country_full_name = iso2Country[submission.country_code as keyof typeof iso2Country];
 
 	const new_submission: typeof submissions_table.$inferInsert = {
 		user: submission.user,

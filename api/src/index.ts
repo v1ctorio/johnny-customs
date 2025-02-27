@@ -1,10 +1,10 @@
 import { Hono } from 'hono'
 import drizzle from './database';
 import { serve } from '@hono/node-server'
-import addSubmission from './database/functions/addSubmission';
-import { type apiSubmission, apiSubmissionSchema } from './types/api_submission';
-import listSubmissions from './database/functions/listSubmissions';
-import removeSubmission from './database/functions/removeSubmission';
+import addSubmission from './database/functions/addSubmission.js';
+import { apiSubmissionSchema } from './types/api_submission.js';
+import listSubmissions from './database/functions/listSubmissions.js';
+import removeSubmission from './database/functions/removeSubmission.js';
 import getSubmission from './database/functions/getSubmission';
 
 const API_KEY = "supersecretapikey";
