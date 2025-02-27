@@ -29,6 +29,7 @@ export default async function addSubmission(submission: apiSubmission) {
 		country_code: submission.country_code,
 		country_full_name,
 		additional_information: submission.additional_information,
+		currency: currency_code
 	}
 
 	await database.insert(submissions_table).values(new_submission).execute();
