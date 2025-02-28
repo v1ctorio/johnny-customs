@@ -6,6 +6,7 @@ import removeSubmission from './database/functions/removeSubmission.js';
 import getSubmission from './database/functions/getSubmission.js';
 import { init } from 'shrimple-env';
 import { logger } from 'hono/logger';
+import getItems from './database/functions/getItems.js';
 
 await init({
 	envFiles: ['../.env']
@@ -84,6 +85,15 @@ app.get('/submissions/:id', async (c) => {
 	}
 
 	return c.json(submission);
+})
+
+app.get('/items', async (c) => {
+	try {
+		const items = await getItems()
+		return c.json(items)
+	} catch (error) {
+		return c.json({ error: 'Internal server error' }, 500)
+	}
 })
 
 

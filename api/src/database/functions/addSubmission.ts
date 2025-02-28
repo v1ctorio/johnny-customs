@@ -21,7 +21,7 @@ export default async function addSubmission(submission: apiSubmission) {
 	const new_submission: typeof submissions_table.$inferInsert = {
 		user: submission.user,
 		item: submission.item,
-		submission_date: submission.submission_date || Date.now(),
+		submission_date: Date.now() / 1000,
 		declared_value: submission.declared_value,
 		declared_value_usd,
 		paid_customs: submission.paid_customs,
