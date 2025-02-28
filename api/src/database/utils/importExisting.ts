@@ -1,12 +1,12 @@
 //!BROKEN
 import countryToCurrency from "country-to-currency";
 import type { apiSubmission as submission } from "../../types/api_submission.js";
-import _v1Data from "./v1data.json" assert { type: "json" };
 import database from "../index.js";
 import { convertCurrency } from "./convert.js";
 import { askAI } from "./ai.js";
 import { submissions_table } from "../schema.js";
 import addSubmission from "../functions/addSubmission.js";
+import { readFile, readdir } from "fs/promises";
 
 const interfaceString = `{
     user: string;
@@ -20,8 +20,29 @@ const interfaceString = `{
 }`;
 
 async function importData() {
+
+  const _v1Data:any = [];
+  try {
+    const currentDirFiles = await readdir('./',)
+    console.log(currentDirFiles)
+    const v1csvcontent = await readFile('./v1data.csv', 'utf8')
+    _v1Data.push(...csvToJson(v1csvcontent) as submission[]) 
+  } catch{
+    console.error("Error reading v1data.csv, trying to read v1data.json")
+    try {
+      const v1jsoncontent = await readFile('./v1data.json', 'utf8')
+      _v1Data.push(...JSON.parse(v1jsoncontent) as submission[])
+
+    } catch {
+      console.error("Error reading v1data.json, aborting")
+      process.exit(1)
+    }
+  } 
+
+  console.log(_v1Data)
   try {
     const v1Data = _v1Data.map((submission) => {
+      console.log(submission)
       const currency = countryToCurrency[submission["Country code (ISO A2)"].replace('IND', 'IN')] || '';
       return {
         user: submission.Author,
@@ -103,6 +124,25 @@ async function importData() {
   } catch (error) {
     console.error("Import failed:", error);
   }
+}
+
+
+function csvToJson(csv: string): Object[] {
+  const lines = csv.split('\n')
+  const result: Object[] = []
+  const headers = lines[0].split(',').map((header) => header.replace('"','').replace('"',''))
+  for (let i = 1; i < lines.length; i++) {        
+      if (!lines[i])
+          continue
+      const obj: Object = {}
+      const currentline = lines[i].split(',')
+
+      for (let j = 0; j < headers.length; j++) {
+          obj[headers[j]] = currentline[j] ?? '' 
+      }
+      result.push(obj)
+  }
+  return result
 }
 
 // Execute the import
