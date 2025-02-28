@@ -5,3 +5,5 @@ export const source = loader({
   baseUrl: '/info',
   source: docs.toFumadocsSource(),
 });
+
+export default source;

@@ -1,13 +1,19 @@
 import { Hono } from 'hono'
-import drizzle from './database';
+import drizzle from './database/index.js';
 import { serve } from '@hono/node-server'
-import addSubmission from './database/functions/addSubmission';
-import { type apiSubmission, apiSubmissionSchema } from './types/api_submission';
-import listSubmissions from './database/functions/listSubmissions';
-import removeSubmission from './database/functions/removeSubmission';
-import getSubmission from './database/functions/getSubmission';
+import addSubmission from './database/functions/addSubmission.js';
+import { type apiSubmission, apiSubmissionSchema } from './types/api_submission.js';
+import listSubmissions from './database/functions/listSubmissions.js';
+import removeSubmission from './database/functions/removeSubmission.js';
+import getSubmission from './database/functions/getSubmission.js';
+import { init } from 'shrimple-env';
 
-const API_KEY = "supersecretapikey";
+await init({
+	envFiles: ['../.env']
+})
+
+
+const API_KEY = process.env.SUBMISSIONS_API_KEY;
 
 const app = new Hono()
 
@@ -16,6 +22,7 @@ app.get('/', (c) => {
 })
 
 app.get('/submissions', async (c) => {
+	console.log("GET /submissions");
 	const page = Number(c.req.query('page')) || 1;
 	const limit = Number(c.req.query('limit')) || 20;
 
@@ -28,15 +35,19 @@ app.get('/submissions', async (c) => {
 })
 
 app.post('/submissions/add', async (c) => {
+	console.log("POST /submissions/add");
 	const apiKey = c.req.header('x-api-key');
 	if (apiKey !== API_KEY) {
 		return c.json({ error: 'Unauthorized' }, 401);
 	}
 
 	const body = await c.req.json();
+	console.log(body);
 	
 	const submission = apiSubmissionSchema.safeParse(body);
+	console.log(submission);
 	if (!submission.success) {
+		console.error('Invalid submission:', submission.error);
 		return c.json({ error: 'Invalid submission' }, 400);
 	}
 
@@ -44,11 +55,13 @@ app.post('/submissions/add', async (c) => {
 		await addSubmission(submission.data);
 	}
 	catch (error) {
+		console.error('Error adding submission:', error);
 		return c.json({ error: 'Internal server error' }, 500);
 	}
 });
 
 app.delete('/submissions/:id', async (c) => {
+	console.log("DELETE /submissions/:id");
 	const apiKey = c.req.header('x-api-key');
 
 	if (apiKey !== API_KEY) {
@@ -67,6 +80,7 @@ app.delete('/submissions/:id', async (c) => {
 });
 
 app.get('/submissions/:id', async (c) => {
+	console.log("GET /submissions/:id");
 	const submission = await getSubmission(Number(c.req.param('id')));
 
 	if (!submission) {

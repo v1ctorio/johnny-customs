@@ -193,25 +193,28 @@ slack.view("view_1", async ({ ack, body, view, logger, client }) => {
       additional_information: notes,
             },
           }); */
-    await fetch(`${process.env.API_URL || 'http://localhost:3000'}/submissions/add`, {
+    const response = await fetch(`${process.env.API_URL || 'http://localhost:3000'}/submissions/add`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.API_KEY || 'supersecretkey',
+      "Content-Type": "application/json",
+      "x-api-key": process.env.SUBMISSIONS_API_KEY || 'supersecretkey',
       },
       body: JSON.stringify({
-        user,
-        item,
-        country_code: iso,
-        country,
-        currency,
-        declared_value: declared,
-        declared_value_usd: declaredUSD,
-        paid_customs: paid,
-        paid_customs_usd: paidUSD,
-        additional_information: notes,
+      user,
+      item,
+      country_code: iso,
+      country,
+      currency,
+      declared_value: declared,
+      declared_value_usd: declaredUSD,
+      paid_customs: paid,
+      paid_customs_usd: paidUSD,
+      additional_information: notes,
       }),
     });
+
+    const result = await response.json();
+    logger.info(result);
   } catch (error) {
     logger.error(error);
   }

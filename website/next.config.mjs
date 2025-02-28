@@ -1,4 +1,11 @@
 import { createMDX } from 'fumadocs-mdx/next';
+import { init } from 'shrimple-env';
+
+await init({
+	envFiles: ['../.env']
+});
+
+const SUBMISSIONS_API_URL = (process.env.SUBMISSIONS_API_URL || 'http://localhost:3000').replace(/^['"](.+)['"]$/, '$1');
 
 const withMDX = createMDX();
 
@@ -7,4 +14,18 @@ const config = {
   reactStrictMode: true,
 };
 
-export default withMDX(config);
+const rewrites = async () => {
+  return [
+    {
+      source: '/api/:path*',
+      destination: `${SUBMISSIONS_API_URL}/:path*`,
+    },
+  ];
+};
+
+export default withMDX({
+  ...config,
+  async rewrites() {
+    return await rewrites();
+  },
+});

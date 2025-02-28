@@ -13,7 +13,19 @@ export default function HomePage() {
           /info
         </Link>{' '}
         to open the documentation.
+      </p> <br />
+      <p className="text-fd-muted-foreground">
+        Click on{' '}
+        <Link
+          href="/submissions"
+          className="text-fd-foreground font-semibold underline"
+        >
+          /submissions
+        </Link>{' '}
+        to view the submissions.
       </p>
     </main>
   );
 }
+
+

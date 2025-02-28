@@ -29,5 +29,10 @@ export const baseOptions: BaseLayoutProps = {
       text: "Slack channel",
       url: "https://hackclub.slack.com/archives/C07JZQHQDBP",
     },
+    {
+      text: "Submissions",
+      url: "/submissions",
+      active: "nested-url",
+    },
   ],
 };
