@@ -6,12 +6,6 @@ import _isoModalOptions from "./utils/isoModalOptions.json" with { type: "json" 
 import _currencies from "./utils/currency.json" with { type: "json" };
 import _iso2CountryCodes from "./utils/iso2CountryCodes.json" with { type: "json" };
 import _countryCurrency from "./utils/countryToCurrency.json" with { type: "json" };
-import prisma from 'db';
-import { addSyntheticLeadingComment, getLineAndCharacterOfPosition, isYieldExpression } from "typescript";
-import { deflateSync } from "zlib";
-import { setDefaultAutoSelectFamily } from "net";
-import { kMaxLength } from "buffer";
-import { sign } from "crypto";
 
 await init({
 	envFiles: ['../.env']
@@ -185,7 +179,7 @@ slack.view("view_1", async ({ ack, body, view, logger, client }) => {
 
   try {
 
-    await prisma.chargeSubmission.create({
+    /* await prisma.chargeSubmission.create({
     data: {
       author: user,
       item: item,
@@ -198,19 +192,32 @@ slack.view("view_1", async ({ ack, body, view, logger, client }) => {
       paid_customs_usd: paidUSD,
       additional_information: notes,
             },
-          });
-        } catch (error) {
-          logger.error(error);
-        }
+          }); */
+    await fetch(`${process.env.API_URL || 'http://localhost:3000'}/submissions/add`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.API_KEY || 'supersecretkey',
+      },
+      body: JSON.stringify({
+        user,
+        item,
+        country_code: iso,
+        country,
+        currency,
+        declared_value: declared,
+        declared_value_usd: declaredUSD,
+        paid_customs: paid,
+        paid_customs_usd: paidUSD,
+        additional_information: notes,
+      }),
+    });
+  } catch (error) {
+    logger.error(error);
+  }
 });
 
 (async () => {
   await slack.start();
   console.log("Slack bot is running");
-  try {
-    const submissions = await prisma.chargeSubmission.findMany();
-    console.log("All submissions:", submissions);
-  } catch (error) {
-    console.error("Error fetching submissions:", error);
-  }
 })();

@@ -10,5 +10,7 @@ export const submissions_table = sqliteTable("submissions_table", {
 	paid_customs: int().notNull(), // Paid customs in cents, local currency
 	paid_customs_usd: int().notNull(), // Paid customs in cents, USD
 	country_code: text().notNull(), // ISO 3166-1 alpha-2 country code
+	country_full_name: text().notNull(), // Country name
 	additional_information: text(), // Additional information
+	currency: text().notNull(), // Currency code
 });
