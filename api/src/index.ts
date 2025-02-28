@@ -88,7 +88,7 @@ app.get('/submissions/:id', async (c) => {
 
 
 if ((typeof process !== 'undefined') && (process.release.name === 'node')) {
-	const {serve} = await import('@hono/node-server')
+	const { serve } = await import('@hono/node-server')
 	serve(app, i => console.log(`Server listening on port ${i.port}`))
 }
 
