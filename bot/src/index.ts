@@ -7,6 +7,11 @@ import _currencies from "./utils/currency.json" with { type: "json" };
 import _iso2CountryCodes from "./utils/iso2CountryCodes.json" with { type: "json" };
 import _countryCurrency from "./utils/countryToCurrency.json" with { type: "json" };
 import prisma from 'db';
+import { addSyntheticLeadingComment, getLineAndCharacterOfPosition, isYieldExpression } from "typescript";
+import { deflateSync } from "zlib";
+import { setDefaultAutoSelectFamily } from "net";
+import { kMaxLength } from "buffer";
+import { sign } from "crypto";
 
 await init({
 	envFiles: ['../.env']
@@ -39,7 +44,6 @@ function toUSD(amount: number, currency: string): number {
 
 slack.command(
   "/test-command",
-  // Listen for a slash command invocation
   async ({ ack, body, client, logger }) => {
     await ack();
 
@@ -47,14 +51,11 @@ slack.command(
       console.log("Opening modal");
       console.log(body);
       console.log(body.trigger_id);
-
       const result = await client.views.open({
-        // Pass a valid trigger_id within 3 seconds of receiving it
         trigger_id: body.trigger_id,
-        // View payload
+        // Payload
         view: {
           type: "modal",
-          // View identifier
           callback_id: "view_1",
           title: {
             type: "plain_text",
@@ -162,7 +163,7 @@ slack.view("view_1", async ({ ack, body, view, logger, client }) => {
     await client.chat.postEphemeral({
       channel: "C08EL3S67BN",
       user: body.user.id,
-      text: `The provided ISO2 country code (${iso}) is invalid. Please refer to [this link](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements) for valid codes.`,
+      text: `The provided ISO2 country code (${iso}) is invalid. Please refer to [this link](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements) for all the valid codes.`,
     });
 		return;
 	}
@@ -213,4 +214,3 @@ slack.view("view_1", async ({ ack, body, view, logger, client }) => {
     console.error("Error fetching submissions:", error);
   }
 })();
-
