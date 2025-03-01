@@ -11,7 +11,7 @@ await init({
 	envFiles: ['../.env']
 })
 
-const APPROVAL_CHANNEL = "C08EL3S67BN";
+const APPROVAL_CHANNEL = process.env.APPROVAL_CHANNEL || "C08EL3S67BN";
 
 const iso2CountryCodes: { [key: string]: string } = _iso2CountryCodes;
 const countryCurrency: { [key: string]: string } = _countryCurrency;

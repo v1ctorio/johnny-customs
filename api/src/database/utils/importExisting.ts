@@ -4,7 +4,7 @@ import type { apiSubmission as submission } from "../../types/api_submission.js"
 import database from "../index.js";
 import { convertCurrency } from "./convert.js";
 import { askAI } from "./ai.js";
-import { submissions_table } from "../schema.js";
+import { submission_status, submissions_table } from "../schema.js";
 import addSubmission from "../functions/addSubmission.js";
 import { readFile, readdir } from "fs/promises";
 
@@ -116,7 +116,7 @@ async function importData() {
     // import valid submissions
     await Promise.all(
       validSubmissions.map( async (submission) =>
-        await addSubmission(submission)
+        await addSubmission(submission, submission_status.APPROVED)
       )
     );
 
