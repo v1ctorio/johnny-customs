@@ -9,12 +9,11 @@ import { logger } from 'hono/logger';
 import getItems from './database/functions/getItems.js';
 import editSubmissionStatus from './database/functions/editSubmissionStatus.js';
 import { submission_status } from './database/schema.js';
-
 await init({
     envFiles: ['../.env']
 })
 
-const API_KEY = process.env.SUBMISSIONS_API_KEY;
+const API_KEY = (process.env.SUBMISSIONS_API_KEY || '').replace(/"/g, '');
 
 const app = new Hono()
 app.use(logger())
@@ -87,7 +86,7 @@ app.post('/submissions/:id/status/:targetstatus', async (c) => {
     const submission_id = Number(c.req.param('id'));
     const targetStatus = c.req.param('targetstatus');
     
-    if (['approved','rejected','pending'].includes(targetStatus) === false) {
+    if (['approved','1','rejected','2','pending','0'].includes(targetStatus) === false) {
         return c.json({ error: 'Invalid status' }, 400);
     }
 
@@ -95,12 +94,15 @@ app.post('/submissions/:id/status/:targetstatus', async (c) => {
 
     switch (targetStatus) {
         case 'approved':
+        case '1':
             status = submission_status.APPROVED;
             break;
         case 'rejected':
+        case '2':
             status = submission_status.REJECTED;
             break;
         case 'pending':
+        case '0':
             status = submission_status.PENDING;
             break;
     }
@@ -128,6 +130,19 @@ app.get('/items', async (c) => {
         return c.json({ error: 'Internal server error' }, 500)
     }
 })
+
+app.post('/admin/checkpassword', async (c) => {
+    const { password } = await c.req.json();3
+    const correctPassword = process.env.ADMIN_SITE_PASSWORD;
+    if (correctPassword && password === correctPassword.replace(/"/g, '')) {
+        return c.json({ success: true });
+    }
+    console.log(password)
+    console.log(process.env.ADMIN_SITE_PASSWORD)
+    return c.json({ success: false });
+})
+
+
 
 if ((typeof process !== 'undefined') && (process.release.name === 'node')) {
     const { serve } = await import('@hono/node-server')

@@ -25,6 +25,7 @@ interface Submission {
   paid_customs_usd: number;
   additional_information: string;
   submission_date: number;
+  approved: number;
 }
 
 export default function SubmissionsPage() {
@@ -39,6 +40,9 @@ export default function SubmissionsPage() {
   const [itemFilter, setItemFilter] = useState("");
   const [countryFilter, setCountryFilter] = useState("");
   const [sortOrderDate, setsortOrderDate] = useState<"asc" | "desc">("desc");
+  const [sortOrderStatus, setsortOrderStatus] = useState<0 | 1 | 2 | "no">(
+    "no"
+  );
 
   useEffect(() => {
     if (submissions) {
@@ -49,18 +53,22 @@ export default function SubmissionsPage() {
         sortedSubmissions.sort((a, b) => b.submission_date - a.submission_date);
       }
 
+      if (sortOrderStatus !== "no") {
+        sortedSubmissions = sortedSubmissions.filter(
+          (submission) => submission.approved === sortOrderStatus
+        );
+      }
+
       setFilteredSubmissions(
         sortedSubmissions.filter((submission) => {
           return (
             submission.item.toLowerCase().includes(itemFilter.toLowerCase()) &&
-            submission.country
-              .toLowerCase()
-              .includes(countryFilter.toLowerCase())
+            submission.country.toLowerCase().includes(countryFilter.toLowerCase())
           );
         })
       );
     }
-  }, [submissions, itemFilter, countryFilter, sortOrderDate]);
+  }, [submissions, itemFilter, countryFilter, sortOrderDate, sortOrderStatus]);
 
   if (isLoading) {
     return <p className="text-center p-4">Loading...</p>;
@@ -69,6 +77,30 @@ export default function SubmissionsPage() {
   const handlesortOrderDateChange = () => {
     setsortOrderDate((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
+
+  const handlesortOrderStatusChange = () => {
+    setsortOrderStatus((prevOrder) =>
+      prevOrder === "no" ? 0 : prevOrder === 0 ? 1 : prevOrder === 1 ? 2 : "no"
+    );
+  };
+
+  const handleStatusChange = async (id: string, status: number) => {
+    const res = await fetch(`/api/submissions/${id}/status/${status}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": "63793d0a2eec867498a35f257a556e62",
+      },
+    });
+    if (res.ok) {
+      if (submissions) {
+        const updatedSubmissions = submissions.map((submission) =>
+          submission.id === id ? { ...submission, approved: status } : submission
+        );
+        setFilteredSubmissions(updatedSubmissions);
+      }
+    }
+  }
 
   return (
     <main className="p-4 md:p-6">
@@ -108,6 +140,14 @@ export default function SubmissionsPage() {
                   Date {sortOrderDate === "asc" ? "↑" : "↓"}
                 </button>
               </th>
+                <th className="p-3 text-left font-semibold w-32">
+                <button
+                  onClick={handlesortOrderStatusChange}
+                  className="p-2 border rounded w-full"
+                >
+                  {sortOrderStatus === "no" ? "All" : sortOrderStatus === 0 ? "Pending" : sortOrderStatus === 1 ? "Approved" : "Rejected"}
+                </button>
+                </th>
             </tr>
           </thead>
           <tbody>
@@ -136,7 +176,20 @@ export default function SubmissionsPage() {
                       submission.submission_date * 1000
                     ).toLocaleDateString()}
                   </td>
+                  <td className="p-3 text-left">
+                    <button
+                    onClick={() => handleStatusChange(submission.id, submission.approved === 0 ? 1 : submission.approved === 1 ? 2 : 1)}
+                    className="p-2 border rounded w-full">
+                      {submission.approved === 0
+                      ? "Pending"
+                      : submission.approved === 1
+                      ? "Approved"
+                      : "Rejected"}
+                      </button>
+                    
+                  </td>
                 </tr>
+                
               ))
             ) : (
               <tr>

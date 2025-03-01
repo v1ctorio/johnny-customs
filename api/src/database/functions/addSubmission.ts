@@ -45,7 +45,6 @@ function isValidCountryCode(country_code: string): boolean {
 	return country_codes.includes(country_code);
 }
 
-
 ///test
 
 // const DB_FILE_NAME = 'file:local.db';
