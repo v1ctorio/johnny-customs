@@ -21,7 +21,7 @@ export default async function addSubmission(submission: apiSubmission, approval_
 	const new_submission: typeof submissions_table.$inferInsert = {
 		user: submission.user,
 		item: submission.item,
-		submission_date: Date.now() / 1000,
+		submission_date: Math.floor(submission.submission_date / 1000) || Math.floor(Date.now() / 1000),
 		declared_value: submission.declared_value,
 		declared_value_usd,
 		paid_customs: submission.paid_customs,
@@ -34,6 +34,7 @@ export default async function addSubmission(submission: apiSubmission, approval_
 	}
 
 	await database.insert(submissions_table).values(new_submission).execute();
+
 
 	//console.log(`Added submission with ID ${JSON.stringify(db_submission)}`);
 	return true;
