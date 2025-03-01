@@ -15,6 +15,13 @@
       "when": 1740760136823,
       "tag": "0001_motionless_iron_monger",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1740859969508,
+      "tag": "0002_easy_karnak",
+      "breakpoints": true
     }
   ]
 }
