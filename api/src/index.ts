@@ -7,6 +7,7 @@ import getSubmission from './database/functions/getSubmission.js';
 import { init } from 'shrimple-env';
 import { logger } from 'hono/logger';
 import getItems from './database/functions/getItems.js';
+import iso2Country from './database/utils/iso2CountryCodes.json' with { type: 'json' };
 
 await init({
 	envFiles: ['../.env']
@@ -32,6 +33,24 @@ app.get('/submissions', async (c) => {
 	});
 
 	return c.json(submissions);
+})
+
+app.get('/submissions/:country', async (c) => {
+	const page = Number(c.req.query('page')) || 1;
+	const limit = Number(c.req.query('limit')) || 20;
+	const country = c.req.param().country.toUpperCase();
+	const countryName = iso2Country[country]
+	if (!countryName) {
+		return c.json({ success: false, error: 'Country name does not exist' })
+	}
+
+	const submissions = await listSubmissions({
+		skip: (page - 1) * limit,
+		take: limit,
+		country: country
+	})
+
+	return c.json(submissions)
 })
 
 app.post('/submissions/add', async (c) => {
@@ -73,8 +92,6 @@ app.delete('/submissions/:id', async (c) => {
 	} catch (error) {
 		return c.json({ error: 'Internal server error' }, 500);
 	}
-
-	
 });
 
 app.get('/submissions/:id', async (c) => {

@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 
 // TODO: move to a separate file in case of other swc uses
@@ -32,6 +31,10 @@ export default function SubmissionsPage() {
 
   if (isLoading) {
     return <p className="text-center p-4">Loading...</p>;
+  }
+
+  if (error) {
+    return <p className="text-center p-4">An error has occurred</p>;
   }
 
   return (

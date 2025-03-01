@@ -16,6 +16,7 @@
         "db:init": "yarn workspace @johnny-customs/api drizzle-kit migrate",
         "db:migrate": "yarn workspace @johnny-customs/api drizzle-kit generate",
         "db:importexisting": "yarn db:init && yarn workspace @johnny-customs/api importexisting",
+        "db:studio": "yarn workspace @johnny-customs/api drizzle-kit studio",
         "web:dev": "yarn workspace website dev",
         "bot:build": "yarn workspace @johnny-customs/slack-bot run build",
         "bot:start": "yarn workspace @johnny-customs/slack-bot run start",
