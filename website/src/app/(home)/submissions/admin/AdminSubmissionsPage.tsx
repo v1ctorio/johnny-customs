@@ -33,6 +33,7 @@ export default function SubmissionsPage() {
     data: submissions,
     error,
     isLoading,
+    mutate,
   } = useSWR<Submission[]>("/api/submissions", fetcher);
   const [filteredSubmissions, setFilteredSubmissions] = useState<Submission[]>(
     []
@@ -43,7 +44,6 @@ export default function SubmissionsPage() {
   const [sortOrderStatus, setsortOrderStatus] = useState<0 | 1 | 2 | "no">(
     "no"
   );
-
   useEffect(() => {
     if (submissions) {
       let sortedSubmissions = [...submissions];
@@ -63,7 +63,9 @@ export default function SubmissionsPage() {
         sortedSubmissions.filter((submission) => {
           return (
             submission.item.toLowerCase().includes(itemFilter.toLowerCase()) &&
-            submission.country.toLowerCase().includes(countryFilter.toLowerCase())
+            submission.country
+              .toLowerCase()
+              .includes(countryFilter.toLowerCase())
           );
         })
       );
@@ -93,14 +95,16 @@ export default function SubmissionsPage() {
       },
     });
     if (res.ok) {
-      if (submissions) {
-        const updatedSubmissions = submissions.map((submission) =>
-          submission.id === id ? { ...submission, approved: status } : submission
-        );
-        setFilteredSubmissions(updatedSubmissions);
-      }
+      mutate(
+        submissions?.map((submission) =>
+          submission.id === id
+            ? { ...submission, approved: status }
+            : submission
+        ),
+        false
+      );
     }
-  }
+  };
 
   return (
     <main className="p-4 md:p-6">
@@ -140,14 +144,20 @@ export default function SubmissionsPage() {
                   Date {sortOrderDate === "asc" ? "↑" : "↓"}
                 </button>
               </th>
-                <th className="p-3 text-left font-semibold w-32">
+              <th className="p-3 text-left font-semibold w-32">
                 <button
                   onClick={handlesortOrderStatusChange}
                   className="p-2 border rounded w-full"
                 >
-                  {sortOrderStatus === "no" ? "All" : sortOrderStatus === 0 ? "Pending" : sortOrderStatus === 1 ? "Approved" : "Rejected"}
+                  {sortOrderStatus === "no"
+                    ? "All"
+                    : sortOrderStatus === 0
+                    ? "Pending"
+                    : sortOrderStatus === 1
+                    ? "Approved"
+                    : "Rejected"}
                 </button>
-                </th>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -178,18 +188,26 @@ export default function SubmissionsPage() {
                   </td>
                   <td className="p-3 text-left">
                     <button
-                    onClick={() => handleStatusChange(submission.id, submission.approved === 0 ? 1 : submission.approved === 1 ? 2 : 1)}
-                    className="p-2 border rounded w-full">
+                      onClick={() =>
+                        handleStatusChange(
+                          submission.id,
+                          submission.approved === 0
+                            ? 1
+                            : submission.approved === 1
+                            ? 2
+                            : 1
+                        )
+                      }
+                      className="p-2 border rounded w-full"
+                    >
                       {submission.approved === 0
-                      ? "Pending"
-                      : submission.approved === 1
-                      ? "Approved"
-                      : "Rejected"}
-                      </button>
-                    
+                        ? "Pending"
+                        : submission.approved === 1
+                        ? "Approved"
+                        : "Rejected"}
+                    </button>
                   </td>
                 </tr>
-                
               ))
             ) : (
               <tr>
