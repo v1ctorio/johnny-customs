@@ -7,6 +7,8 @@ import getSubmission from './database/functions/getSubmission.js';
 import { init } from 'shrimple-env';
 import { logger } from 'hono/logger';
 import getItems from './database/functions/getItems.js';
+import editSubmissionStatus from './database/functions/editSubmissionStatus.js';
+import { submission_status } from './database/schema.js';
 
 await init({
 	envFiles: ['../.env']
@@ -35,10 +37,7 @@ app.get('/submissions', async (c) => {
 })
 
 app.post('/submissions/add', async (c) => {
-	const apiKey = c.req.header('x-api-key');
-	if (apiKey !== API_KEY) {
-		return c.json({ error: 'Unauthorized' }, 401);
-	}
+
 
 	const body = await c.req.json();
 	console.log(body);
@@ -86,6 +85,45 @@ app.get('/submissions/:id', async (c) => {
 
 	return c.json(submission);
 })
+
+app.post('/submissions/:id/status/:targetstatus', async (c) => {
+	const apiKey = c.req.header('x-api-key');
+
+	const submission_id = Number(c.req.param('id'));
+	const targetStatus = c.req.param('targetstatus');
+	
+	if (['approved','rejected','pending'].includes(targetStatus) === false) {
+		return c.json({ error: 'Invalid status' }, 400);
+	}
+
+	let status: submission_status | undefined;
+
+	switch (targetStatus) {
+		case 'approved':
+			status = submission_status.APPROVED;
+			break;
+		case 'rejected':
+			status = submission_status.REJECTED;
+			break;
+		case 'pending':
+			status = submission_status.PENDING;
+			break;
+	}
+	if (!status) {
+		return c.json({ error: 'Invalid status' }, 400);
+	}
+
+	if (apiKey !== API_KEY) {
+		return c.json({ error: 'Unauthorized' }, 401);
+	}
+
+	try {
+		await editSubmissionStatus(submission_id, status);
+	} catch (error) {
+		return c.json({ error: 'Internal server error' }, 500);
+	}
+})
+
 
 app.get('/items', async (c) => {
 	try {

@@ -2,12 +2,12 @@ import countryToCurrency from 'country-to-currency';
 import type { apiSubmission } from '../../types/api_submission.js';
 import database from '../index.js';
 
-import { submissions_table } from '../schema.js';
+import { submission_status, submissions_table } from '../schema.js';
 import { convertCurrency } from '../utils/convert.js';
 
 import iso2Country from '../utils/iso2CountryCodes.json' with { type: 'json' };
 
-export default async function addSubmission(submission: apiSubmission) {
+export default async function addSubmission(submission: apiSubmission, approval_status?: submission_status) {
 	if (isValidCountryCode(submission.country_code) === false) {
 		throw new Error("Invalid country code");
 	}
@@ -29,7 +29,8 @@ export default async function addSubmission(submission: apiSubmission) {
 		country_code: submission.country_code,
 		country,
 		additional_information: submission.additional_information,
-		currency: currency_code
+		currency: currency_code,
+		approved: approval_status ?? submission_status.PENDING
 	}
 
 	await database.insert(submissions_table).values(new_submission).execute();
