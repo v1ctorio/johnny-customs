@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import database from "../index.js";
-import { submissions_table } from "../schema.js";
+import { submission_status, submissions_table } from "../schema.js";
 
 export default async function listSubmissions({
   skip,
@@ -17,7 +17,7 @@ export default async function listSubmissions({
       .from(submissions_table)
       .limit(take)
       .offset(skip)
-      .where(eq(submissions_table.country_code, country));
+      .where(and(eq(submissions_table.country_code, country), eq(submissions_table.approved, submission_status.APPROVED)));
   }
-	return database.select().from(submissions_table).limit(take).offset(skip);
+	return database.select().from(submissions_table).offset(skip).where(eq(submissions_table.approved,submission_status.APPROVED));
 }

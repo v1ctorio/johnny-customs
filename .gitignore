@@ -139,7 +139,7 @@ dist
 .bun
 bun*
 
-*v1data.json
+*v1data.*
 *sqlite.db*
 .vscode
 api/local.db

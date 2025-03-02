@@ -8,11 +8,12 @@ import { init } from 'shrimple-env';
 import { logger } from 'hono/logger';
 import getItems from './database/functions/getItems.js';
 import iso2Country from './database/utils/iso2CountryCodes.json' with { type: 'json' };
+import editSubmissionStatus from './database/functions/editSubmissionStatus.js';
+import { submission_status } from './database/schema.js';
 
 await init({
-	envFiles: ['../.env']
+    envFiles: ['../.env']
 })
-
 
 const API_KEY = process.env.SUBMISSIONS_API_KEY;
 
@@ -24,15 +25,15 @@ app.get('/', (c) => {
 })
 
 app.get('/submissions', async (c) => {
-	const page = Number(c.req.query('page')) || 1;
-	const limit = Number(c.req.query('limit')) || 20;
+    const page = Number(c.req.query('page')) || 1;
+    const limit = Number(c.req.query('limit')) || 20;
 
-	const submissions = await listSubmissions({
-		skip: (page - 1) * limit,
-		take: limit,
-	});
+    const submissions = await listSubmissions({
+        skip: (page - 1) * limit,
+        take: limit,
+    });
 
-	return c.json(submissions);
+    return c.json(submissions);
 })
 
 app.get('/submissions/:country', async (c) => {
@@ -54,69 +55,102 @@ app.get('/submissions/:country', async (c) => {
 })
 
 app.post('/submissions/add', async (c) => {
-	const apiKey = c.req.header('x-api-key');
-	if (apiKey !== API_KEY) {
-		return c.json({ error: 'Unauthorized' }, 401);
-	}
+    const body = await c.req.json();
+    console.log(body);
+    
+    const submission = apiSubmissionSchema.safeParse(body);
+    console.log(submission);
+    if (!submission.success) {
+        console.error('Invalid submission:', submission.error);
+        return c.json({ error: 'Invalid submission' }, 400);
+    }
 
-	const body = await c.req.json();
-	console.log(body);
-	
-	const submission = apiSubmissionSchema.safeParse(body);
-	console.log(submission);
-	if (!submission.success) {
-		console.error('Invalid submission:', submission.error);
-		return c.json({ error: 'Invalid submission' }, 400);
-	}
-
-	try {
-		await addSubmission(submission.data);
-	}
-	catch (error) {
-		console.error('Error adding submission:', error);
-		return c.json({ error: 'Internal server error' }, 500);
-	}
+    try {
+        await addSubmission(submission.data);
+        return c.json({ success: true });
+    }
+    catch (error) {
+        console.error('Error adding submission:', error);
+        return c.json({ error: 'Internal server error' }, 500);
+    }
 });
 
 app.delete('/submissions/:id', async (c) => {
-	const apiKey = c.req.header('x-api-key');
+    const apiKey = c.req.header('x-api-key');
 
-	if (apiKey !== API_KEY) {
-		return c.json({ error: 'Unauthorized' }, 401);
-	}
+    if (apiKey !== API_KEY) {
+        return c.json({ error: 'Unauthorized' }, 401);
+    }
 
-	try {
-		await removeSubmission(Number(c.req.param('id')));
-
-		return c.json({ success: true });
-	} catch (error) {
-		return c.json({ error: 'Internal server error' }, 500);
-	}
+    try {
+        await removeSubmission(Number(c.req.param('id')));
+        return c.json({ success: true });
+    } catch (error) {
+        return c.json({ error: 'Internal server error' }, 500);
+    }
 });
 
 app.get('/submissions/:id', async (c) => {
-	const submission = await getSubmission(Number(c.req.param('id')));
+    const submission = await getSubmission(Number(c.req.param('id')));
 
-	if (!submission) {
-		return c.json({ error: 'Submission not found' }, 404);
-	}
+    if (!submission) {
+        return c.json({ error: 'Submission not found' }, 404);
+    }
 
-	return c.json(submission);
+    return c.json(submission);
+})
+
+app.post('/submissions/:id/status/:targetstatus', async (c) => {
+    const apiKey = c.req.header('x-api-key');
+
+    const submission_id = Number(c.req.param('id'));
+    const targetStatus = c.req.param('targetstatus');
+    
+    if (['approved','rejected','pending'].includes(targetStatus) === false) {
+        return c.json({ error: 'Invalid status' }, 400);
+    }
+
+    let status: submission_status | undefined;
+
+    switch (targetStatus) {
+        case 'approved':
+            status = submission_status.APPROVED;
+            break;
+        case 'rejected':
+            status = submission_status.REJECTED;
+            break;
+        case 'pending':
+            status = submission_status.PENDING;
+            break;
+    }
+    if (!status) {
+        return c.json({ error: 'Invalid status' }, 400);
+    }
+
+    if (apiKey !== API_KEY) {
+        return c.json({ error: 'Unauthorized' }, 401);
+    }
+
+    try {
+        await editSubmissionStatus(submission_id, status);
+        return c.json({ success: true });
+    } catch (error) {
+        return c.json({ error: 'Internal server error' }, 500);
+    }
 })
 
 app.get('/items', async (c) => {
-	try {
-		const items = await getItems()
-		return c.json(items)
-	} catch (error) {
-		return c.json({ error: 'Internal server error' }, 500)
-	}
+    try {
+        const items = await getItems()
+        return c.json(items)
+    } catch (error) {
+        return c.json({ error: 'Internal server error' }, 500)
+    }
 })
 
-
 if ((typeof process !== 'undefined') && (process.release.name === 'node')) {
-	const { serve } = await import('@hono/node-server')
-	serve(app, i => console.log(`Server listening on port ${i.port}`))
+    const { serve } = await import('@hono/node-server')
+    serve(app, i => console.log(`Server listening on port ${i.port}`))
 }
 
 export default app

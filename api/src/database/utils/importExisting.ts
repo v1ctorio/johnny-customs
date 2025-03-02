@@ -1,31 +1,30 @@
 //!BROKEN
 import countryToCurrency from "country-to-currency";
 import type { apiSubmission as submission } from "../../types/api_submission.js";
-import database from "../index.js";
-import { convertCurrency } from "./convert.js";
 import { askAI } from "./ai.js";
-import { submissions_table } from "../schema.js";
+import { submission_status, submissions_table } from "../schema.js";
 import addSubmission from "../functions/addSubmission.js";
-import { readFile, readdir } from "fs/promises";
+import { readFile } from "node:fs/promises";
 
 const interfaceString = `{
     user: string;
     item: string;
-    submission_date: number;
-    declared_value: number;
-    paid_customs: number;
     country_code: string;
+    country: string;
     currency: string;
+    declared_value: number;
+    declared_value_usd: number;
+    paid_customs: number;
+    paid_customs_usd: number;
+    submission_date?: number | undefined;
     additional_information?: string | undefined;
+    approved?: number | undefined;
 }`;
 
 async function importData() {
-
-  const _v1Data:any = [];
+  const _v1Data: any = [];
   try {
-    const currentDirFiles = await readdir('./',)
-    console.log(currentDirFiles)
-    const v1csvcontent = await readFile('./v1data.csv', 'utf8')
+    const v1csvcontent = await readFile('./src/database/utils/v1data.csv', 'utf8')
     _v1Data.push(...csvToJson(v1csvcontent) as submission[]) 
   } catch{
     console.error("Error reading v1data.csv, trying to read v1data.json")
@@ -42,7 +41,6 @@ async function importData() {
   console.log(_v1Data)
   try {
     const v1Data = _v1Data.map((submission) => {
-      console.log(submission)
       const currency = countryToCurrency[submission["Country code (ISO A2)"].replace('IND', 'IN')] || '';
       return {
         user: submission.Author,
@@ -55,8 +53,9 @@ async function importData() {
         submission_date: 0,
         currency: currency,
         additional_information: submission.Notes,
-      };
-    }) as submission[];
+        approved: 0,
+      } as submission;
+    });
 
     // process submissions
     const processedData = await Promise.all(
@@ -86,6 +85,8 @@ async function importData() {
               type "money" is number. convert country codes to ISO 3166-1 alpha-2 country codes.
               type "currency" is ISO 4217 currency code.
               return ONLY the treated json object and nothing else.
+              "country" is the country name.
+              DO NOT TOUCH THE "approved" VALUE.
               Here's the json object: ${JSON.stringify(submission)}
               MAKE SURE YOU ARE RETURNING A VALID JSON OBJECT, ACCORDING TO THE TYPESCRIPT INTERFACE AND THE JSON SPEC.`);
           const cleaned = aiResponse.replaceAll("```", "").replace("json", "");
@@ -116,7 +117,7 @@ async function importData() {
     // import valid submissions
     await Promise.all(
       validSubmissions.map( async (submission) =>
-        await addSubmission(submission)
+        await addSubmission(submission, submission_status.APPROVED)
       )
     );
 
