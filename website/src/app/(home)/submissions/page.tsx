@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import useSWR from 'swr';
 
 // TODO: move to a separate file in case of other swc uses
@@ -41,7 +42,7 @@ export default function SubmissionsPage() {
 
   useEffect(() => {
     if (submissions) {
-      let sortedSubmissions = [...submissions];
+      const sortedSubmissions = [...submissions];
       if (sortOrder === "asc") {
         sortedSubmissions.sort((a, b) => a.submission_date - b.submission_date);
       } else {
@@ -105,6 +106,7 @@ export default function SubmissionsPage() {
               <th className="p-3 text-right font-semibold">Customs Paid</th>
               <th className="p-3 text-left font-semibold">
                 <button
+                  type="button"
                   onClick={handleSortOrderChange}
                   className="p-2 border rounded"
                 >
