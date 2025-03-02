@@ -130,17 +130,17 @@ export default function SubmissionsPage(props: Props) {
                   <td className="p-3 text-left">{submission.item}</td>
                   {!props.countryCode && <td className="p-3 text-left">{submission.country}</td>}
                   <td className="p-3 text-right">
-                    {(submission.declared_value / 100).toFixed(2)}{" "}
+                    {(submission.declared_value).toFixed(2)}{" "}
                     {submission.currency}
                     <div className="text-xs opacity-75">
-                      (${(submission.declared_value_usd / 100).toFixed(2)} USD)
+                      (${(submission.declared_value_usd).toFixed(2)} USD)
                     </div>
                   </td>
                   <td className="p-3 text-right">
-                    {(submission.paid_customs / 100).toFixed(2)}{" "}
+                    {(submission.paid_customs).toFixed(2)}{" "}
                     {submission.currency}
                     <div className="text-xs opacity-75">
-                      (${(submission.paid_customs_usd / 100).toFixed(2)} USD)
+                      (${(submission.paid_customs_usd).toFixed(2)} USD)
                     </div>
                   </td>
                   <td className="p-3 text-left">
