@@ -29,6 +29,7 @@ interface Submission {
 }
 
 export default function SubmissionsPage() {
+  const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
   const {
     data: submissions,
     error,
@@ -87,11 +88,15 @@ export default function SubmissionsPage() {
   };
 
   const handleStatusChange = async (id: string, status: number) => {
+    if (!API_KEY) {
+      throw new Error("API_KEY is not defined");
+    }
+    
     const res = await fetch(`/api/submissions/${id}/status/${status}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": "63793d0a2eec867498a35f257a556e62",
+        "x-api-key": API_KEY,
       },
     });
     if (res.ok) {

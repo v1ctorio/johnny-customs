@@ -81,7 +81,7 @@ app.get('/submissions/:id', async (c) => {
 })
 
 app.post('/submissions/:id/status/:targetstatus', async (c) => {
-    const apiKey = c.req.header('x-api-key');
+    const apiKey = (c.req.header('x-api-key') || '').replace(/"/g, '');
 
     const submission_id = Number(c.req.param('id'));
     const targetStatus = c.req.param('targetstatus');
@@ -111,6 +111,8 @@ app.post('/submissions/:id/status/:targetstatus', async (c) => {
     }
 
     if (apiKey !== API_KEY) {
+        console.log(apiKey)
+        console.log(API_KEY)
         return c.json({ error: 'Unauthorized' }, 401);
     }
 
