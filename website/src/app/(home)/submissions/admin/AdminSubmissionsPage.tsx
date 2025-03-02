@@ -30,12 +30,18 @@ interface Submission {
 
 export default function SubmissionsPage() {
   const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+  
   const {
     data: submissions,
     error,
     isLoading,
     mutate,
-  } = useSWR<Submission[]>("/api/submissions", fetcher);
+  } = useSWR<Submission[]>(
+    `/api/submissions?all=true&page=${currentPage}&limit=${limit}`,
+    fetcher
+  );
   const [filteredSubmissions, setFilteredSubmissions] = useState<Submission[]>(
     []
   );
@@ -91,7 +97,7 @@ export default function SubmissionsPage() {
     if (!API_KEY) {
       throw new Error("API_KEY is not defined");
     }
-    
+
     const res = await fetch(`/api/submissions/${id}/status/${status}`, {
       method: "POST",
       headers: {
@@ -111,15 +117,60 @@ export default function SubmissionsPage() {
     }
   };
 
+  const handlePageChange = async (page: number) => {
+    if (page < 1) return;
+  
+    const response = await fetch(`/api/submissions?all=true&page=${page}&limit=${limit}`);
+    const data = await response.json();
+  
+    if (data.length > 0) {
+      setCurrentPage(page);
+    } else {
+      setCurrentPage(page-1);
+    }
+  };
+
   return (
     <main className="p-4 md:p-6">
       <h1 className="text-2xl font-bold mb-6">Submissions</h1>
 
+      <div className="mb-4 flex justify-between items-center">
+        <div>
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="p-2 border rounded bg-blue-500 text-white mr-2"
+          >
+            Prev
+          </button>
+          <span className="mx-2">Page {currentPage}</span >
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            className="p-2 border rounded bg-blue-500 text-white mx-2"
+          >
+            Next
+          </button>
+        </div>
+        <div>
+          <label htmlFor="limit" className="mr-2">Items per page:</label>
+          <select
+            id="limit"
+            value={limit}
+            onChange={(e) => setLimit(Number(e.target.value))}
+            className="p-2 border rounded"
+          >
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+          </select>
+        </div>
+      </div>
+      
       <div className="w-full overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b">
-              <th className="p-3 text-left font-semibold">User</th>
+              <th className="p-3 text-left font-semibold w-12">User</th>
               <th className="p-3 text-left font-semibold">
                 <input
                   type="text"
@@ -149,7 +200,7 @@ export default function SubmissionsPage() {
                   Date {sortOrderDate === "asc" ? "↑" : "↓"}
                 </button>
               </th>
-              <th className="p-3 text-left font-semibold w-32">
+              <th className="p-3 text-right font-semibold w-32">
                 <button
                   onClick={handlesortOrderStatusChange}
                   className="p-2 border rounded w-full"
@@ -163,6 +214,7 @@ export default function SubmissionsPage() {
                     : "Rejected"}
                 </button>
               </th>
+              <th className="p-3 text-center font-semibold w-20">Delete</th>
             </tr>
           </thead>
           <tbody>
@@ -210,6 +262,26 @@ export default function SubmissionsPage() {
                         : submission.approved === 1
                         ? "Approved"
                         : "Rejected"}
+                    </button>
+                  </td>
+                  <td className="p-3 text-center">
+                    <button
+                      onClick={() => {
+                        fetch(`/api/submissions/${submission.id}`, {
+                          method: "DELETE",
+                          headers: {
+                            "x-api-key": API_KEY || "",
+                          },
+                        }).then(() => {
+                          mutate(
+                            submissions?.filter((s) => s.id !== submission.id),
+                            false
+                          );
+                        });
+                      }}
+                      className="p-2 border rounded bg-red-500 text-white"
+                    >
+                      Delete
                     </button>
                   </td>
                 </tr>

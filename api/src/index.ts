@@ -26,10 +26,12 @@ app.get('/', (c) => {
 app.get('/submissions', async (c) => {
     const page = Number(c.req.query('page')) || 1;
     const limit = Number(c.req.query('limit')) || 20;
+    const allowAll = c.req.query('all') === 'true';
 
     const submissions = await listSubmissions({
         skip: (page - 1) * limit,
         take: limit,
+        allowAll
     });
 
     return c.json(submissions);
@@ -75,7 +77,7 @@ app.post('/submissions/add', async (c) => {
 });
 
 app.delete('/submissions/:id', async (c) => {
-    const apiKey = c.req.header('x-api-key');
+    const apiKey = (c.req.header('x-api-key') || '').replace(/"/g, '');
 
     if (apiKey !== API_KEY) {
         return c.json({ error: 'Unauthorized' }, 401);
@@ -130,8 +132,8 @@ app.post('/submissions/:id/status/:targetstatus', async (c) => {
     }
 
     if (apiKey !== API_KEY) {
-        console.log(apiKey)
-        console.log(API_KEY)
+        // console.log(apiKey)
+        // console.log(API_KEY)
         return c.json({ error: 'Unauthorized' }, 401);
     }
 
