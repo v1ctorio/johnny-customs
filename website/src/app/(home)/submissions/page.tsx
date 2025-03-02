@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import useSWR from 'swr';
+import useSWR from "swr";
 
 // TODO: move to a separate file in case of other swc uses
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -27,12 +27,15 @@ interface Submission {
   submission_date: number;
 }
 
-export default function SubmissionsPage() {
+export default function SubmissionsPage(props: Props) {
   const {
     data: submissions,
     error,
     isLoading,
-  } = useSWR<Submission[]>("/api/submissions", fetcher);
+  } = useSWR<Submission[]>(
+    `/api/submissions${props.countryCode ? `/${props.countryCode}` : ""}`,
+    fetcher
+  );
   const [filteredSubmissions, setFilteredSubmissions] = useState<Submission[]>(
     []
   );
@@ -75,8 +78,10 @@ export default function SubmissionsPage() {
   };
 
   return (
-    <main className="p-4 md:p-6">
-      <h1 className="text-2xl font-bold mb-6">Submissions</h1>
+    <main className={!props.countryCode ? "p-4 md:p-6" : ""}>
+      {!props.countryCode && (
+        <h1 className="text-2xl font-bold mb-6">Submissions</h1>
+      )}
 
       <div className="w-full overflow-x-auto">
         <table className="w-full border-collapse">
@@ -92,16 +97,18 @@ export default function SubmissionsPage() {
                   className="p-2 border rounded"
                 />
               </th>
-              <th className="p-3 text-left font-semibold">
-                {" "}
-                <input
-                  type="text"
-                  placeholder="Country"
-                  value={countryFilter}
-                  onChange={(e) => setCountryFilter(e.target.value)}
-                  className="p-2 border rounded"
-                />
-              </th>
+              {!props.countryCode && (
+                <th className="p-3 text-left font-semibold">
+                  {" "}
+                  <input
+                    type="text"
+                    placeholder="Country"
+                    value={countryFilter}
+                    onChange={(e) => setCountryFilter(e.target.value)}
+                    className="p-2 border rounded"
+                  />
+                </th>
+              )}
               <th className="p-3 text-right font-semibold">Declared Value</th>
               <th className="p-3 text-right font-semibold">Customs Paid</th>
               <th className="p-3 text-left font-semibold">
@@ -121,7 +128,7 @@ export default function SubmissionsPage() {
                 <tr key={submission.id} className="border-b hover:bg-fd-muted">
                   <td className="p-3 text-left">{submission.user}</td>
                   <td className="p-3 text-left">{submission.item}</td>
-                  <td className="p-3 text-left">{submission.country}</td>
+                  {!props.countryCode && <td className="p-3 text-left">{submission.country}</td>}
                   <td className="p-3 text-right">
                     {(submission.declared_value / 100).toFixed(2)}{" "}
                     {submission.currency}
@@ -155,4 +162,8 @@ export default function SubmissionsPage() {
       </div>
     </main>
   );
+}
+
+interface Props {
+  countryCode?: string;
 }
