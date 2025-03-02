@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 
 // TODO: move to a separate file in case of other swc uses
@@ -27,12 +27,15 @@ interface Submission {
   submission_date: number;
 }
 
-export default function SubmissionsPage() {
+export default function SubmissionsPage(props: Props) {
   const {
     data: submissions,
     error,
     isLoading,
-  } = useSWR<Submission[]>("/api/submissions", fetcher);
+  } = useSWR<Submission[]>(
+    `/api/submissions${props.countryCode ? `/${props.countryCode}` : ""}`,
+    fetcher
+  );
   const [filteredSubmissions, setFilteredSubmissions] = useState<Submission[]>(
     []
   );
@@ -42,7 +45,7 @@ export default function SubmissionsPage() {
 
   useEffect(() => {
     if (submissions) {
-      let sortedSubmissions = [...submissions];
+      const sortedSubmissions = [...submissions];
       if (sortOrderDate === "asc") {
         sortedSubmissions.sort((a, b) => a.submission_date - b.submission_date);
       } else {
@@ -66,13 +69,19 @@ export default function SubmissionsPage() {
     return <p className="text-center p-4">Loading...</p>;
   }
 
+  if (error) {
+    return <p className="text-center p-4">An error has occurred</p>;
+  }
+
   const handlesortOrderDateChange = () => {
     setsortOrderDate((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
 
   return (
-    <main className="p-4 md:p-6">
-      <h1 className="text-2xl font-bold mb-6">Submissions</h1>
+    <main className={!props.countryCode ? "p-4 md:p-6" : ""}>
+      {!props.countryCode && (
+        <h1 className="text-2xl font-bold mb-6">Submissions</h1>
+      )}
 
       <div className="w-full overflow-x-auto">
         <table className="w-full border-collapse">
@@ -88,20 +97,23 @@ export default function SubmissionsPage() {
                   className="p-2 border rounded"
                 />
               </th>
-              <th className="p-3 text-left font-semibold">
-                {" "}
-                <input
-                  type="text"
-                  placeholder="Country"
-                  value={countryFilter}
-                  onChange={(e) => setCountryFilter(e.target.value)}
-                  className="p-2 border rounded"
-                />
-              </th>
+              {!props.countryCode && (
+                <th className="p-3 text-left font-semibold">
+                  {" "}
+                  <input
+                    type="text"
+                    placeholder="Country"
+                    value={countryFilter}
+                    onChange={(e) => setCountryFilter(e.target.value)}
+                    className="p-2 border rounded"
+                  />
+                </th>
+              )}
               <th className="p-3 text-right font-semibold">Declared Value</th>
               <th className="p-3 text-right font-semibold">Customs Paid</th>
               <th className="p-3 text-left font-semibold">
                 <button
+                  type="button"
                   onClick={handlesortOrderDateChange}
                   className="p-2 border rounded"
                 >
@@ -116,19 +128,19 @@ export default function SubmissionsPage() {
                 <tr key={submission.id} className="border-b hover:bg-fd-muted">
                   <td className="p-3 text-left">{submission.user}</td>
                   <td className="p-3 text-left">{submission.item}</td>
-                  <td className="p-3 text-left">{submission.country}</td>
+                  {!props.countryCode && <td className="p-3 text-left">{submission.country}</td>}
                   <td className="p-3 text-right">
-                    {(submission.declared_value / 100).toFixed(2)}{" "}
+                    {(submission.declared_value).toFixed(2)}{" "}
                     {submission.currency}
                     <div className="text-xs opacity-75">
-                      (${(submission.declared_value_usd / 100).toFixed(2)} USD)
+                      (${(submission.declared_value_usd).toFixed(2)} USD)
                     </div>
                   </td>
                   <td className="p-3 text-right">
-                    {(submission.paid_customs / 100).toFixed(2)}{" "}
+                    {(submission.paid_customs).toFixed(2)}{" "}
                     {submission.currency}
                     <div className="text-xs opacity-75">
-                      (${(submission.paid_customs_usd / 100).toFixed(2)} USD)
+                      (${(submission.paid_customs_usd).toFixed(2)} USD)
                     </div>
                   </td>
                   <td className="p-3 text-left">
@@ -150,4 +162,8 @@ export default function SubmissionsPage() {
       </div>
     </main>
   );
+}
+
+interface Props {
+  countryCode?: string;
 }

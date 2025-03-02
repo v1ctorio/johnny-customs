@@ -1,37 +1,36 @@
-//!BROKEN
 import countryToCurrency from "country-to-currency";
 import type { apiSubmission as submission } from "../../types/api_submission.js";
 import { askAI } from "./ai.js";
 import { submission_status, submissions_table } from "../schema.js";
 import addSubmission from "../functions/addSubmission.js";
 import { readFile } from "node:fs/promises";
+import neatCsv, { type Row } from 'neat-csv';
 
 const interfaceString = `{
-    user: string;
-    item: string;
-    country_code: string;
-    country: string;
-    currency: string;
-    declared_value: number;
-    declared_value_usd: number;
-    paid_customs: number;
-    paid_customs_usd: number;
-    submission_date?: number | undefined;
-    additional_information?: string | undefined;
-    approved?: number | undefined;
+  user: string;
+  item: string;
+  country_code: string;
+  country: string;
+  currency: string;
+  declared_value: number;
+  declared_value_usd: number;
+  paid_customs: number;
+  paid_customs_usd: number;
+  submission_date?: number | undefined;
+  additional_information?: string | undefined;
+  approved?: number | undefined;
 }`;
 
 async function importData() {
-  const _v1Data: any = [];
+  const _v1Data: Row[] = [];
   try {
-    const v1csvcontent = await readFile('./src/database/utils/v1data.csv', 'utf8')
-    _v1Data.push(...csvToJson(v1csvcontent) as submission[]) 
+    const v1csvcontent = await neatCsv(await readFile('./src/database/utils/v1data.csv', 'utf8'))
+    _v1Data.push(...v1csvcontent) 
   } catch{
     console.error("Error reading v1data.csv, trying to read v1data.json")
     try {
       const v1jsoncontent = await readFile('./v1data.json', 'utf8')
-      _v1Data.push(...JSON.parse(v1jsoncontent) as submission[])
-
+      _v1Data.push(...JSON.parse(v1jsoncontent))
     } catch {
       console.error("Error reading v1data.json, aborting")
       process.exit(1)
@@ -58,6 +57,7 @@ async function importData() {
     });
 
     // process submissions
+    let progress = 0;
     const processedData = await Promise.all(
       v1Data.map(async (submission) => {
         if (
@@ -87,6 +87,8 @@ async function importData() {
               return ONLY the treated json object and nothing else.
               "country" is the country name.
               DO NOT TOUCH THE "approved" VALUE.
+              do NOT convert currencies, and put the decimals right.
+              add trailing zeros to the right of the decimal point if necessary.
               Here's the json object: ${JSON.stringify(submission)}
               MAKE SURE YOU ARE RETURNING A VALID JSON OBJECT, ACCORDING TO THE TYPESCRIPT INTERFACE AND THE JSON SPEC.`);
           const cleaned = aiResponse.replaceAll("```", "").replace("json", "");
@@ -99,8 +101,8 @@ async function importData() {
             );
           }
 
-
-
+          progress += 1 / v1Data.length;
+          printProgress(progress);
           return processedSubmission;
         } catch (error) {
           console.error("Error processing submission:", submission.item, error);
@@ -127,24 +129,18 @@ async function importData() {
   }
 }
 
-
-function csvToJson(csv: string): Object[] {
-  const lines = csv.split('\n')
-  const result: Object[] = []
-  const headers = lines[0].split(',').map((header) => header.replace('"','').replace('"',''))
-  for (let i = 1; i < lines.length; i++) {        
-      if (!lines[i])
-          continue
-      const obj: Object = {}
-      const currentline = lines[i].split(',')
-
-      for (let j = 0; j < headers.length; j++) {
-          obj[headers[j]] = currentline[j] ?? '' 
-      }
-      result.push(obj)
-  }
-  return result
+function asciiProgressbar(progress: number, length: number) {
+  const progressChars = Math.floor(progress * length);
+  const bar = Array.from({ length }, (_, i) =>
+    i < progressChars ? "█" : "░"
+  ).join("");
+  return bar;
 }
 
-// Execute the import
+function printProgress(progress: number) {
+  process.stdout.clearLine(0);
+  process.stdout.cursorTo(0);
+  process.stdout.write(`${asciiProgressbar(progress, 20)} ${Math.round(progress * 100)}%`);
+}
+
 importData();
