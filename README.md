@@ -2,18 +2,6 @@
 
 Hack-Club AIO customs helper (API, DB, Web, Admin, Slack Bot).
 
-## Table of Contents
-
-- [Introduction](#introduction)
-- [Features](#features)
-- [Website Images](#images)
-- [Installation](#installation)
-- [Running the services](#running-the-services)
-- [Usage](#usage)
-- [Contributing](#contributing)
-
-## Introduction
-
 Johnny Customs is an all-in-one solution for managing customs submissions. It includes an API, database, web interface, admin panel, and Slack bot integration.
 
 ## Features
