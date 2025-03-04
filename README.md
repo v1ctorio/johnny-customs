@@ -22,7 +22,7 @@ Johnny Customs is an all-in-one solution for managing customs submissions. It in
 - Database integration with Drizzle
 - Web interface built with Next.js
 - Admin panel for managing submissions
-- Slack bot for interacting with the system
+- Slack bot for easily adding new submissions
 
 ## Images
 <details>
