@@ -58,20 +58,10 @@ git clone https://github.com/v1ctorio/johnny-customs.git
 cd johnny-customs
 ```
 
-### Install dependencies for each part of the project
+### Install dependencies using yarn
 
 ```
-# Install dependencies for the API
-cd johnny-customs/api
-npm install
-
-# Install dependencies for the bot
-cd johnny-customs/bot
-npm install
-
-# Install dependencies for the website
-cd johnny-customs/website
-npm install
+yarn
 ```
 
 ### Set up environment variables:
@@ -86,20 +76,20 @@ cp .env.example .env
 To start the API server:
 ```
 cd api
-npm run start
+yarn start
 ```
 API available at localhost:3000.
 #### Bot
 To start the Slack bot:
 ```
 cd bot
-npm run start
+yarn start
 ```
 #### Website
 To start the Next.js development server:
 ```
 cd website
-npm run dev
+yarn dev
 ```
 Open http://localhost:3001 with your browser to see the result.
 
