@@ -27,6 +27,11 @@ interface Submission {
   submission_date: number;
 }
 
+
+interface Props {
+  countryCode?: string;
+}
+
 export default function SubmissionsPage(props: Props) {
   const {
     data: submissions,
@@ -162,8 +167,4 @@ export default function SubmissionsPage(props: Props) {
       </div>
     </main>
   );
-}
-
-interface Props {
-  countryCode?: string;
 }
