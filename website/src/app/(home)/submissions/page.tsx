@@ -1,5 +1,6 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 
@@ -28,17 +29,16 @@ interface Submission {
 }
 
 
-interface Props {
-  countryCode?: string;
-}
 
-export default function SubmissionsPage(props: Props) {
+export default function SubmissionsPage() {
+  const params = useParams();
   const {
+    
     data: submissions,
     error,
     isLoading,
   } = useSWR<Submission[]>(
-    `/api/submissions${props.countryCode ? `/${props.countryCode}` : ""}`,
+    `/api/submissions${params.countryCode ? `/${params.countryCode}` : ""}`,
     fetcher
   );
   const [filteredSubmissions, setFilteredSubmissions] = useState<Submission[]>(
@@ -83,8 +83,8 @@ export default function SubmissionsPage(props: Props) {
   };
 
   return (
-    <main className={!props.countryCode ? "p-4 md:p-6" : ""}>
-      {!props.countryCode && (
+    <main className={!params.countryCode ? "p-4 md:p-6" : ""}>
+      {!params.countryCode && (
         <h1 className="text-2xl font-bold mb-6">Submissions</h1>
       )}
 
@@ -102,7 +102,7 @@ export default function SubmissionsPage(props: Props) {
                   className="p-2 border rounded"
                 />
               </th>
-              {!props.countryCode && (
+              {!params.countryCode && (
                 <th className="p-3 text-left font-semibold">
                   {" "}
                   <input
@@ -133,7 +133,7 @@ export default function SubmissionsPage(props: Props) {
                 <tr key={submission.id} className="border-b hover:bg-fd-muted">
                   <td className="p-3 text-left">{submission.user}</td>
                   <td className="p-3 text-left">{submission.item}</td>
-                  {!props.countryCode && <td className="p-3 text-left">{submission.country}</td>}
+                  {!params.countryCode && <td className="p-3 text-left">{submission.country}</td>}
                   <td className="p-3 text-right">
                     {(submission.declared_value).toFixed(2)}{" "}
                     {submission.currency}
