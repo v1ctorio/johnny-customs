@@ -36,18 +36,16 @@ const data = [
   { link: '', label: 'Germany', flag: '🇩🇪',  },
 ];
 
-const countries = fetchAviableCountries
 
-export default function DocNavBar() {
+export default function DocNavBar({active}: {active: string}) {
 
 
-  const activePage = usePathname().split('/')[2]
 
 
   const links = data.map((item) => (
     <a
       className={classes.link}
-      data-active={item.label === activePage || undefined}
+      data-active={item.label === active || undefined}
       href={item.link}
       key={item.label}
 

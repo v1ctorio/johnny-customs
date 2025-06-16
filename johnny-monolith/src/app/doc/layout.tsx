@@ -1,6 +1,4 @@
-import { AppShell, AppShellHeader, AppShellMain, AppShellNavbar } from "@mantine/core";
-import DocNavBar from "./NavBar/NavBar";
-import Header from "@/components/Header/Header";
+import { AppShell,  } from "@mantine/core";
 
 export default function DocLayout({
 	children,
@@ -15,16 +13,8 @@ export default function DocLayout({
       navbar={{ width: 300, breakpoint: 'sm', }}
 		>
 
-			<AppShellHeader>
-				<Header/>
-			</AppShellHeader>
-			
-			<AppShellNavbar>
-				<DocNavBar active="Main" />
-			</AppShellNavbar>
-
-			<AppShellMain 
-			>{children}</AppShellMain>
+{children}
+	
 
 		</AppShell>
 	);
