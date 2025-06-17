@@ -10,16 +10,19 @@ export default function Footer() {
       <Container className={classes.inner}>
 				<Group gap={10} justify='flex-start' wrap='nowrap'>
           <img alt='logo' height={30} width={30} src="https://placecats.com/30/30" />
-					<Text fw={700}>Johnny Customs</Text>
+					<Text fw={600}> Made by Vic 4 Hack Club</Text>
 
 				</Group>
         
-        <Group gap={0} className={classes.links} justify="flex-end" wrap="nowrap">
+        <a href="https://hackclub.slack.com/archives/C07JZQHQDBP">
+          <Group gap={0} className={classes.links} justify="flex-end" wrap="nowrap">
 
           <ActionIcon size="lg" color="gray" variant="subtle">
             <IconBrandSlack size={25} stroke={1.5} />
           </ActionIcon>
         </Group>
+        </a>
+        
       </Container>
     </div>
   );

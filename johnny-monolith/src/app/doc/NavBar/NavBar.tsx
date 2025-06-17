@@ -1,57 +1,30 @@
 "use client";
 
-interface countryData {
-  country_full_name: string;
-  ID_name: string;
-  country_code: string;
-  currency: string;
-  flag: string;
-}
-
-
-
-async function fetchAviableCountries(): countryData[] {
-  "use server";
-
-  
-  
-}
 
 import {
   IconLogout,
 } from '@tabler/icons-react';
 import { Code, Group } from '@mantine/core';
 import classes from './NavBar.module.css';
-import { usePathname } from 'next/navigation'
-import { fstat } from 'fs';
-import { GetStaticProps } from 'next';
-
-const data = [
-  { link: '', label: 'Main', flag: "" },
-  { link: '', label: 'Spain', flag: '🇪🇸',  },
-  { link: '', label: 'United Kingdom', flag: '🇬🇧',  },
-  { link: '', label: 'Italy', flag: '🇮🇹',  },
-  { link: '', label: 'Romania', flag: '🇷🇴',  },
-  { link: '', label: 'Australia', flag: '🇦🇺',  },
-  { link: '', label: 'Germany', flag: '🇩🇪',  },
-];
+import { countryData } from '../[slug]/page';
 
 
-export default function DocNavBar({active}: {active: string}) {
+
+export default function DocNavBar({active, countries}: {active: string, countries: countryData[]}) {
 
 
 
 
-  const links = data.map((item) => (
+  const links = countries.map((item) => (
     <a
       className={classes.link}
-      data-active={item.label === active || undefined}
-      href={item.link}
-      key={item.label}
+      data-active={item.country_code === active || undefined}
+      href={`/doc/${item.country_code}`}
+      key={item.country_code}
 
     >
       <p className={classes.linkFlag}style={{fontSize:"200"}}>{item.flag}</p>
-      <span>{item.label}</span>
+      <span>{item.country_full_name}</span>
     </a>
   ));
 

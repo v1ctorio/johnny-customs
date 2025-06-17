@@ -5,6 +5,34 @@ import Header from "@/components/Header/Header";
 import { AppShellHeader, AppShellMain, AppShellNavbar } from "@mantine/core";
 import DocNavBar from "../NavBar/NavBar";
 
+
+export interface countryData {
+  country_full_name: string; // Country full name in the native language and script. If more than one or doubt, fallback to english name 
+  country_code: string; // ISO 3166-1 A-2 country code (es, us, uk, ar...) https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes
+	currency: string; // ISO 4271 mainly used currency code https://en.wikipedia.org/wiki/ISO_4217#Active_codes_(list_one)
+  flag: string; // Country national flag https://emojipedia.org/flags
+}
+
+
+
+export const pages: countryData[] = [
+	{
+		country_full_name: "España",
+		country_code: "es",
+		currency: "EUR",
+		flag: "🇪🇸"
+	}
+] 
+
+
+export async function generateStaticParams() {
+
+	return pages.map(c => ({
+		slug: c.country_code
+	}))
+	
+}
+
 export default async function Page({
   params,
 }: {
@@ -20,7 +48,7 @@ export default async function Page({
 			</AppShellHeader>
 			
 			<AppShellNavbar>
-				<DocNavBar active="slug"/>
+				<DocNavBar active={slug} countries={pages}/>
 			</AppShellNavbar>
 
 			<AppShellMain 

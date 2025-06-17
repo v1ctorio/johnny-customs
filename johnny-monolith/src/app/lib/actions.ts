@@ -38,10 +38,11 @@ export async function updateLog(formData: FormData) {
   const id = formData.get('id')
   const title = formData.get('title')
   const content = formData.get('content')
-  return { id, title, content }
+
+  return null as any as Log[] 
 }
 
-export async function listLog(length: number?, offset: number = 0) {
+export async function listLog(length?: number, offset: number = 0) {
   'use server'
-  return { action, description }
+  return null as any as Log[] | undefined
 }

@@ -1,8 +1,25 @@
-export type Currency = 'USD' | 'EUR' | 'GBP' | 'CAD';
-export type CountryCode = 'ES' | 'CA' | 'UK' | 'US';
+export type Currency = 'USD' | 'EUR' | 'GBP' | 'CAD' | 'CNY' | 'JPY' | 'AUD' | 'CHF' | 'NZD' | 'RUB' | 'INR' | 'ZAR' | 'KRW' | 'BRL' | 'MXN' | 'SGD' | 'HKD' | 'SEK' | 'NOK' | 'DKK' | 'PLN' | 'TRY';
+export type CountryCode = 'ES' | 'CA' | 'UK' | 'US' ;
 
+const USDRate = {
+	rate:1,
+	code: 'USD',
+	name: 'United States Dollar',
+	inverseRate: 1,
+}
+interface FloatRates {
+	[key: string]: { // key is lowercase currency code
+		rate: number;
+		aplhaCode: string;
+		code: string; 
+		numericCode: string;
+		name: string;
+		inverseRate: number;
+		date: string;
+	};
+}
 
-export async function pullUSDJson() {
+export async function pullUSDJson(): Promise<FloatRates> {
 	'use server';
 	const res = await fetch('https://www.floatrates.com/daily/usd.json', {
 		cache: 'force-cache',
@@ -21,25 +38,33 @@ export async function exchangeCurrency(originCurrency: Currency, targetCurrency:
 		return amount;
 	}
 
-	const rates = await pullUSDJson();
+	const rates = (await pullUSDJson())
 
-	const fromRate = rates[originCurrency];
-	const toRate = rates[targetCurrency];
+	const fromRate = rates[originCurrency.toLowerCase()] || USDRate;
+	const toRate = rates[targetCurrency.toLowerCase()] || USDRate;
 
-	if (!fromRate || !toRate) {
+
+	let originInUSD = amount * fromRate.inverseRate
+
+	if (originCurrency === 'USD') {
+		originInUSD = amount;
+	}
+
+
+	if (!originInUSD) {
 		throw new Error(`Unsupported invalid conversion from ${originCurrency} to ${targetCurrency}`);
 	}
 
-	return (amount / fromRate) * toRate;
+	return originInUSD * toRate.rate;
 }
 
 export function countryToCurrency(country: CountryCode): Currency | null {
 	const countryMap: Record<CountryCode, Currency> = {
 		'US': 'USD',
 		'CA': 'CAD',
-		'GB': 'GBP',
-		'EU': 'EUR',
+		'UK': 'GBP',
+		'ES': 'EUR',
 	};
 
-	return countryMap[country.toUpperCase()] || null;
+	return countryMap[country] || null;
 }
