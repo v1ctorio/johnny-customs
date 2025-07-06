@@ -5,6 +5,7 @@ import '@mantine/core/styles.css';
 import React from 'react';
 import { ColorSchemeScript, mantineHtmlProps, MantineProvider } from '@mantine/core';
 import { theme } from '../../theme';
+import { SessionProvider } from 'next-auth/react';
 
 export const metadata = {
   title: 'Johhny Customs',
@@ -23,7 +24,11 @@ export default function RootLayout({ children }: { children: any }) {
         />
       </head>
       <body>
-        <MantineProvider theme={theme}>{children}</MantineProvider>
+        <MantineProvider theme={theme}>
+        <SessionProvider >
+          {children}
+          </SessionProvider>        
+        </MantineProvider>          
       </body>
     </html>
   );
