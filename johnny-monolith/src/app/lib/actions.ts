@@ -10,6 +10,7 @@ export interface Log {
   paidCustoms: number
 
   notes?: string; 
+  approved?: boolean; 
 }
 
 

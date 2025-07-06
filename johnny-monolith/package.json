@@ -27,6 +27,7 @@
     "@tabler/icons-react": "^3.31.0",
     "@types/mdx": "^2.0.13",
     "next": "15.2.3",
+    "next-auth": "^5.0.0-beta.29",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "rehype-slug": "^6.0.0"

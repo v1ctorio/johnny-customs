@@ -10,7 +10,6 @@ import {
   IconNotification,
 } from '@tabler/icons-react';
 import {
-  Anchor,
   Box,
   Burger,
   Button,
@@ -19,10 +18,7 @@ import {
   Divider,
   Drawer,
   Group,
-  HoverCard,
-  Image,
   ScrollArea,
-  SimpleGrid,
   Text,
   ThemeIcon,
   UnstyledButton,
@@ -30,6 +26,8 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import classes from './Header.module.css';
+
+import { useSession, signIn, signOut } from 'next-auth/react'
 
 const mockdata = [
   {
@@ -64,11 +62,14 @@ const mockdata = [
   },
 ];
 
+
 export default function Header() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
   const theme = useMantineTheme();
 
+
+  const { data: session } = useSession()
   const links = mockdata.map((item) => (
     <UnstyledButton className={classes.subLink} key={item.title}>
       <Group wrap="nowrap" align="flex-start">
@@ -113,7 +114,12 @@ export default function Header() {
           </Group>
 
           <Group visibleFrom="sm">
-            <Button variant="default">Log in with Slack</Button>
+            
+            { session?.user == null ?
+             <Button variant="filled" onClick={()=>signIn("slack")}>Log in with Slack</Button>
+             :
+             <Button variant='light' onClick={()=> signOut()}>Log out {session.user?.name}</Button>}
+            
           </Group>
 
           <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
@@ -153,9 +159,7 @@ export default function Header() {
 
           <Divider my="sm" />
 
-          <Group justify="center" grow pb="xl" px="md">
-            <Button variant="default">Log in with Slack</Button>
-          </Group>
+
         </ScrollArea>
       </Drawer>
     </Box>
