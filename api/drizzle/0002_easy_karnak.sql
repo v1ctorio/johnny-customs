@@ -1,1 +1,0 @@
-ALTER TABLE `submissions_table` ADD `approved` integer DEFAULT 0 NOT NULL;
