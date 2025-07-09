@@ -7,6 +7,24 @@ import { eq } from "drizzle-orm";
 import { createInsertSchema } from 'drizzle-zod';
 
 
+export interface APISubmission {
+  id: string;
+  thing: string; // name of the thing customs were paid for
+  thing_id: string;
+
+  author: string; // Log author slack id
+  country: string //2 letter country code
+  currency: string; // currency symbol
+  declaredValue?: number; // value declared to customs
+  paidCustoms: number
+
+  notes?: string; 
+  approved: boolean; 
+
+  declaredValueUSD?: number;
+  paidCustomsUSD?: number
+}
+
 const submissionInsertSchema = createInsertSchema(submissionsTable)
 
 

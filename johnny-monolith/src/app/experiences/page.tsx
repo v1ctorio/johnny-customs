@@ -1,5 +1,9 @@
-import { Text } from "@mantine/core";
+import { Group, Text } from "@mantine/core";
+import { ETable } from "./components/ETable/ETable";
 
 export default function ExperiencesPage(){
-    return <Text>Hola</Text>
+    return <Group justify="center">
+    <ETable />
+
+    </Group>
 }
