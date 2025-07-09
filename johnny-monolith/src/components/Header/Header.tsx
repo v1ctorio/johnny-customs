@@ -62,8 +62,23 @@ const mockdata = [
   },
 ];
 
+const butns = [
+  {
+    caption: "Documentation",
+    href: "doc"
+  }, 
+  {
+    caption: "Stats",
+    href: "stats"
+  },
+  {
+    caption: "Experiences",
+    href: "experiences"
+  }
+]
 
-export default function Header() {
+
+export default function Header({active}:{active?:string} = {active:""}) {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
   const theme = useMantineTheme();
@@ -100,16 +115,13 @@ export default function Header() {
 
           <Group h="100%" gap={0} visibleFrom="sm">
 
-     
-            <a href="/doc" className={classes.link}>
-              Documentation
-            </a>
-            <a href="/stats" className={classes.link}>
-              Stats
-            </a>
-						<a href="/experiences" className={classes.link}>
-							Experiences
-						</a>
+
+            {butns.map(b => {
+            
+            return <a href={`/${b.href}`} className={`${classes.link} ${active === b.href ? classes.activelink: ""}`}>{b.caption}</a>
+            })}
+
+
 
           </Group>
 
