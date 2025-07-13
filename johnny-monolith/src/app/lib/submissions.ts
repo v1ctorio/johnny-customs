@@ -2,15 +2,18 @@
 
 import { z } from "zod"
 import { db } from "@/db/drizzle"
-import { submissionsTable } from "@/db/schema"
+import { submissionsTable, thingsTable } from "@/db/schema"
 import { eq } from "drizzle-orm";
 import { createInsertSchema } from 'drizzle-zod';
+import { validCountryCodes } from "./constants";
+import { sendToSlack } from "./slack";
+import { createThing, getThingById } from "./things";
 
 
 const submissionInsertSchema = createInsertSchema(submissionsTable)
 
 
-export async function createSubmission({formData, submitter}:{formData: FormData, submitter: string}
+export async function createSubmission({formData, submitter, newThingName}:{formData: FormData, submitter: string,newThingName?:string}
 ) {
   const thing_id = formData.get('thing_id')
   const notes = formData.get('notes')
@@ -19,30 +22,44 @@ export async function createSubmission({formData, submitter}:{formData: FormData
   const declared_value = formData.get('declared_value')
   const paid_customs = formData.get('paid_customs')
 
-  submissionInsertSchema.parse({
+
+
+
+  let dat = submissionInsertSchema.parse({
     thing_id,
     notes,
-    payment_date: new Date(payment_date as string),
+    payment_date: payment_date ? new Date(payment_date as string) : new Date(),
     country,
     declared_value: parseInt(declared_value as string, 10),
     paid_customs: parseInt(paid_customs as string, 10),
     submitter,
+
   })
 
-  const entry = await db.insert(submissionsTable).values({
-    thing_id: thing_id as string,
-    notes: notes as string,
-    payment_date: payment_date ? new Date(payment_date as string) : new Date(),
-    country: country as string,
-    declared_value: parseInt(declared_value as string, 10),
-    paid_customs: parseInt(paid_customs as string, 10),
-    submitter: submitter,
-  })
+  let thing = await getThingById(dat.thing_id)
+
+  if (!thing) {
+    if(!newThingName) {
+        throw new Error("No thing name provider neither valid thing_id")
+      }
+    //TODO: Fix that thing id could be duplicated and that would do something or idk
+    thing = await createThing(newThingName)
+    dat = submissionInsertSchema.parse({...dat,thing_id:thing.id})
+  }
+
+  if (!validCountryCodes.includes(dat.country)) {
+    throw new Error("Invalid country code provided")
+  }
+
+  const newRow = (await db.insert(submissionsTable).values(dat).returning())[0]
+
+  await dispatchNewRow(newRow, !!newThingName)
+  return newRow
+
 }
  
-export async function deleteSubmission(formData: FormData) {
-  const id = formData.get('id')
-  return id
+export async function deleteSubmission(submission_id: number) {
+  await db.delete(submissionsTable).where(eq(submissionsTable.id,submission_id))
 }
 
 export async function updateSubmission(formData: FormData) {
@@ -63,8 +80,19 @@ export async function approveSubmission(submission_ID: number,reject = false){
 
 }
 
-export async function listSubmissions(length?: number, offset: number = 0) {
+export async function listSubmissions(length: number = 30, offset: number = 0, includeUnapproved = false) {
   'use server'
-  return null as any as Log[] | undefined
+  let submissions
+  let base_query = db.select().from(submissionsTable).orderBy(submissionsTable.id).limit(length).offset(offset)
+  if (!includeUnapproved) {
+    submissions = await base_query.where(eq(submissionsTable.approved, true))
+  } else {
+    submissions = await base_query
+  }
+
+  return submissions
 }
 
+async function dispatchNewRow(submission: typeof submissionsTable.$inferSelect,includesNewThing = false) {
+  sendToSlack(`New submission recived \n\n \`\`\`${JSON.stringify(submission)}\`\`\`` + includesNewThing ? "\n __Adds a new thing__" : "")
+}
