@@ -26,6 +26,10 @@
   }
 }
 
+.activelink {
+  background-color: alpha(light-dark(var(--mantine-color-blue-3), var(--mantine-color-blue-9)),0.2);
+}
+
 .subLink {
   width: 100%;
   padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
