@@ -69,7 +69,7 @@ export function ETable({useUSD}:{useUSD?: boolean}){
 
     return (
             <ScrollArea h={300} w={1400} onScrollPositionChange={({ y }) => setScrolled(y !== 0)}>
-      <Table miw={700}>
+      <Table miw={700} striped highlightOnHover>
         <TableThead className={`${classes.header}, ${scrolled?classes.scrolled:""}`}>
           <TableTr>
             <TableTh>ID</TableTh>
