@@ -2,7 +2,7 @@
 
 import classes from './ETable.module.css';
 import { APISubmission } from "@/app/lib/submissions";
-import { ScrollArea, Table, TableTd, TableTh, TableThead, TableTr } from "@mantine/core";
+import { Pagination, Stack, Table, TableTd, TableTh, TableThead, TableTr } from "@mantine/core";
 import { useState } from "react";
 
 const mockData: APISubmission[] = [
@@ -50,8 +50,10 @@ const mockData: APISubmission[] = [
 
 
 export function ETable({useUSD}:{useUSD?: boolean}){
-    const [scrolled, setScrolled] = useState(false)
-    const rows = mockData.map(r=>{
+
+  const [data, setData] = useState(mockData)
+
+    const rows = data.map(r=>{
      return <TableTr key={r.id}>
         <TableTd>{r.id}</TableTd>
         <TableTd>{r.thing}</TableTd>
@@ -68,9 +70,9 @@ export function ETable({useUSD}:{useUSD?: boolean}){
     })
 
     return (
-            <ScrollArea h={300} w={1400} onScrollPositionChange={({ y }) => setScrolled(y !== 0)}>
-      <Table miw={700} striped highlightOnHover>
-        <TableThead className={`${classes.header}, ${scrolled?classes.scrolled:""}`}>
+      <Stack>
+      <Table miw={600} maw={1400} striped highlightOnHover>
+        <TableThead className={`${classes.header}`}>
           <TableTr>
             <TableTh>ID</TableTh>
             <TableTh>Thing</TableTh>
@@ -81,6 +83,8 @@ export function ETable({useUSD}:{useUSD?: boolean}){
         </TableThead>
         <Table.Tbody>{rows}</Table.Tbody>
       </Table>
-    </ScrollArea>
+
+      <Pagination total={data.length}/>
+      </Stack>
     )
 }
