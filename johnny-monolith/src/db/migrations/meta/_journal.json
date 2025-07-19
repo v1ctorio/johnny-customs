@@ -8,6 +8,13 @@
       "when": 1752939324064,
       "tag": "0000_last_scalphunter",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1752945082457,
+      "tag": "0001_brave_crystal",
+      "breakpoints": true
     }
   ]
 }

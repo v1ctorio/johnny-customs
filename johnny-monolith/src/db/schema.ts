@@ -1,4 +1,4 @@
-import { date, pgTable, integer, varchar, boolean, timestamp } from "drizzle-orm/pg-core";
+import { date, pgTable, integer, varchar, boolean, timestamp, doublePrecision } from "drizzle-orm/pg-core";
 
 export const submissionsTable = pgTable("submissions", {
 	id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -21,4 +21,13 @@ export const thingsTable = pgTable("things", {
 	id: varchar({length: 32}).primaryKey(), // short unique identifier without special characters
 	name: varchar({length: 64}).notNull(), // full name of the thing
 	image: varchar({length: 256})
+})
+
+
+export const countriesData = pgTable("countries_data", {
+	iso3316_1a2: varchar({length:2}).primaryKey(), //2 chars country code 
+	iso4217: varchar({length:3}).notNull(),// currency code
+	full_name: varchar().notNull(),
+	flag: varchar(),
+	ínverseRate: doublePrecision().notNull()
 })
