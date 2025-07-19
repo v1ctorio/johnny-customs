@@ -5,14 +5,14 @@ import { db } from "@/db/drizzle"
 import { submissionsTable, thingsTable } from "@/db/schema"
 import { eq } from "drizzle-orm";
 import { createInsertSchema } from 'drizzle-zod';
-import { countries, validCountryCodes } from "./constants";
+import { countries, countryToCurrency, getCountriesData, getCountryData, validCountryCodes } from "./constants";
 import { sendToSlack } from "./slack";
 import { createThing, getThingById } from "./things";
-import { CountryCode, countryToCurrency, exchangeCurrency } from "./money";
+import { CountryCode, currencyToUSD } from "./money";
 
 
 export interface APISubmission {
-  id: string;
+  id: number;
   thing: string; // name of the thing customs were paid for
   thing_id: string;
 
@@ -100,7 +100,7 @@ export async function approveSubmission(submission_ID: number,reject = false){
 
 }
 
-export async function listSubmissions(length: number = 30, offset: number = 0, includeUnapproved = false): APISubmission[] {
+export async function listSubmissions(length: number = 30, offset: number = 0, includeUnapproved = false): Promise<APISubmission[]> {
   'use server'
   let submissions
   const base_query = db.select().from(submissionsTable).innerJoin(thingsTable,eq(submissionsTable.thing_id, thingsTable.id)).orderBy(submissionsTable.id).limit(length).offset(offset)
@@ -110,9 +110,11 @@ export async function listSubmissions(length: number = 30, offset: number = 0, i
     submissions = await base_query
   }
 
-  const returnSubmission: APISubmission[] = submissions.map( async s => {
+  const countries_data = await getCountriesData()
 
-    const cur =  countryToCurrency[s.submissions.country as CountryCode]
+  const returnSubmission: APISubmission[] = submissions.map( s => {
+
+    const cur =  countryToCurrency[s.submissions.country as keyof typeof countryToCurrency] ?? "UNK"
     return {
         id: s.submissions.id,
   thing: s.things.name, 
@@ -124,11 +126,11 @@ export async function listSubmissions(length: number = 30, offset: number = 0, i
   currency: cur,
   declared_value: s.submissions.declared_value, 
   paid_customs: s.submissions.paid_customs,
-  notes: s.submissions.notes, 
-  approved: s.submissions.approved, 
+  notes: s.submissions.notes ?? undefined, 
+  approved: s.submissions.approved || false, 
 
-  declared_value_usd: await exchangeCurrency(cur,"USD",s.submissions.declared_value),
-  paid_customs_usd: await exchangeCurrency(cur,"USD", s.submissions.paid_customs)
+  declared_value_usd: currencyToUSD(cur,s.submissions.declared_value,countries_data),
+  paid_customs_usd: currencyToUSD(cur,s.submissions.paid_customs,countries_data)
 }
   })
 

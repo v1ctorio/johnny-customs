@@ -1,3 +1,11 @@
+CREATE TABLE "countries_data" (
+	"iso3316_1a2" varchar(2) PRIMARY KEY NOT NULL,
+	"iso4217" varchar(3) NOT NULL,
+	"full_name" varchar NOT NULL,
+	"flag" varchar,
+	"inverseRate" double precision NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "submissions" (
 	"id" integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "submissions_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START WITH 1 CACHE 1),
 	"payment_date" date NOT NULL,

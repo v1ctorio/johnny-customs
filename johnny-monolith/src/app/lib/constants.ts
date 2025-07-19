@@ -1,3 +1,6 @@
+import { db } from "@/db/drizzle";
+import { countriesData } from "@/db/schema";
+
 export const countries = {
 	AF: "Afghanistan",
 	AX: "Åland Islands",
@@ -258,3 +261,7 @@ export const countryToCurrency = {"AF":"AFN","AL":"ALL","DZ":"DZD","AS":"USD","A
 export type validCountryCodes =  keyof (typeof countries)
 
 export const JOHNNY_ADMINS = process.env.JOHNNY_ADMINS?.split(" ")
+
+export async function getCountriesData(): Promise<typeof countriesData.$inferSelect[]> {
+	return await db.select().from(countriesData)
+} 

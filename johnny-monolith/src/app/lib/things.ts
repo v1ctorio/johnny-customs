@@ -23,7 +23,7 @@ export async function createThing(name: string) {
 	if (name.length > 64) {
 		throw new Error('Thing full name must be 64 characters or less');
 	}
-	const newThing = await db.insert(thingsTable).values({ id, name: name }).returning();
+	const newThing = await db.insert(thingsTable).values({ id, name }).returning();
 	revalidatePath('/api/things');
 	return newThing[0];
 }

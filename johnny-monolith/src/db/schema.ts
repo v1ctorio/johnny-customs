@@ -7,7 +7,7 @@ export const submissionsTable = pgTable("submissions", {
 
 
 	submitter: varchar({length:32}).notNull(),
-	approved: boolean().default(false),
+	approved: boolean().default(false).notNull(),
 	country: varchar({length:2}).notNull(), // ISO 3166-1 alpha-2 country code
 	declared_value: integer().notNull(), // in cents
 	paid_customs: integer().notNull(), // in cents
@@ -29,5 +29,5 @@ export const countriesData = pgTable("countries_data", {
 	iso4217: varchar({length:3}).notNull(),// currency code
 	full_name: varchar().notNull(),
 	flag: varchar(),
-	ínverseRate: doublePrecision().notNull()
+	inverseRate: doublePrecision().notNull()
 })

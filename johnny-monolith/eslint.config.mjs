@@ -6,6 +6,8 @@ export default tseslint.config(
   ...mantine,
   { ignores: ['**/*.{mjs,cjs,js,d.ts,d.mts}'] },
   {
-    rules: { 'no-console': 'off','prefer-template':'off' },
+    rules: { 'no-console': 'off','prefer-template':'off', 
+      'no-unused-vars':"warn"
+     },
   },
 );

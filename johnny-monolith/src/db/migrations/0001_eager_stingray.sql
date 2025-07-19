@@ -1,0 +1,1 @@
+ALTER TABLE "submissions" ALTER COLUMN "approved" SET NOT NULL;

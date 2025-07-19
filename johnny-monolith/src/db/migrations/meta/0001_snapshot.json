@@ -1,6 +1,6 @@
 {
-  "id": "9d2e5086-3327-4812-88a3-46686bf0e103",
-  "prevId": "ee2915a4-55d1-48b1-b173-fb4ee74ea3cf",
+  "id": "4a118fd6-b61d-497d-9846-4d8c7bc81b5b",
+  "prevId": "16ad029c-1465-46b3-8549-f9599105b4be",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -32,8 +32,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "ínverseRate": {
-          "name": "ínverseRate",
+        "inverseRate": {
+          "name": "inverseRate",
           "type": "double precision",
           "primaryKey": false,
           "notNull": true
@@ -91,7 +91,7 @@
           "name": "approved",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": false
         },
         "country": {

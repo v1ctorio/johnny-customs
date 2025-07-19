@@ -1,3 +1,5 @@
+
+import { countriesData } from "@/db/schema";
 import { countries } from "./constants";
 
 export type Currency = 'USD' | 'EUR' | 'GBP' | 'CAD' | 'CNY' | 'JPY' | 'AUD' | 'CHF' | 'NZD' | 'RUB' | 'INR' | 'ZAR' | 'KRW' | 'BRL' | 'MXN' | 'SGD' | 'HKD' | 'SEK' | 'NOK' | 'DKK' | 'PLN' | 'TRY';
@@ -35,28 +37,18 @@ export async function pullUSDJson(): Promise<FloatRates> {
 	return res.json();
 }
 
-export async function exchangeCurrency(originCurrency: Currency, targetCurrency: Currency, amount: number) {
-	if (originCurrency === targetCurrency) {
+
+export function currencyToUSD(originCurrency: Currency | string |null, amount: number, CD: typeof countriesData.$inferSelect[]) {
+	if (originCurrency === "USD") {
 		return amount;
 	}
-
-	const rates = (await pullUSDJson())
-
-	const fromRate = rates[originCurrency.toLowerCase()] || USDRate;
-	const toRate = rates[targetCurrency.toLowerCase()] || USDRate;
+	    const currencyData = CD.find(c => c.iso4217 === originCurrency);
 
 
-	let originInUSD = amount * fromRate.inverseRate
-
-	if (originCurrency === 'USD') {
-		originInUSD = amount;
+	if(!currencyData) {
+		return 0
 	}
 
-
-	if (!originInUSD) {
-		throw new Error(`Unsupported invalid conversion from ${originCurrency} to ${targetCurrency}`);
-	}
-
-	return originInUSD * toRate.rate;
+	return amount * currencyData?.inverseRate
 }
 

@@ -1,9 +1,52 @@
 {
-  "id": "ee2915a4-55d1-48b1-b173-fb4ee74ea3cf",
+  "id": "16ad029c-1465-46b3-8549-f9599105b4be",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.countries_data": {
+      "name": "countries_data",
+      "schema": "",
+      "columns": {
+        "iso3316_1a2": {
+          "name": "iso3316_1a2",
+          "type": "varchar(2)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "iso4217": {
+          "name": "iso4217",
+          "type": "varchar(3)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "full_name": {
+          "name": "full_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "flag": {
+          "name": "flag",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inverseRate": {
+          "name": "inverseRate",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.submissions": {
       "name": "submissions",
       "schema": "",
