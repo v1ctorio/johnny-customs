@@ -1,9 +1,16 @@
-import { Group, Text } from "@mantine/core";
+import { Button, Container, Group, Stack, Text, Title } from "@mantine/core";
 import { ETable } from "./components/ETable/ETable";
 
 export default function ExperiencesPage(){
-    return <Group justify="center">
-    <ETable />
+    return <Container>
+        <Stack gap="xl">
 
-    </Group>
+        <Group justify="space-between">
+            <Title>Experiences</Title>
+            <Button>Add my experience</Button>
+        </Group>
+    <ETable />
+        </Stack>
+
+    </Container>
 }

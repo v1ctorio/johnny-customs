@@ -20,7 +20,7 @@ export default async function Page(){
 
 			<>
 			<Title>Per-country documentation</Title>
-			<Text>Welcome to Johnny-customs docs. These are tips and info regarding customs in your country. Pick your country on the left navbar</Text>
+			<Text>Welcome to Johnny-customs docs. These are tips and info regarding customs for all countries. Pick your country on the left navbar.</Text>
 			</>
 						</AppShellMain>
 						</>

@@ -13,7 +13,7 @@ export interface CachetUserData {
 	image:string;
 }
 
-export function SlackUserButton({uID}:{uID:string}) {
+export function SlackUserButton({uID, catMode = false}:{uID:string,catMode?:boolean}) {
 	const [user, setUser] = useState<CachetUserData|null>(null)
 	
 	useEffect(()=>{
@@ -27,11 +27,11 @@ export function SlackUserButton({uID}:{uID:string}) {
 
 	return <UnstyledButton className={classes.button}>
 		<Group>
-			<Avatar variant="filled" src={"https://placecats.com/300/300"/*user ? user.image : ""*/}/>
+			<Avatar variant="filled" src={ catMode ? "https://placecats.com/300/300" : user ? user.image : ""}/>
 			        <div style={{ flex: 1 }}>
 
     <div
-      className={classes.marquee}
+      className={user && user?.displayName?.length > 15 ? classes.marquee : classes.singleLine}
       
     >
           <Text size="sm" fw={500} component="span">
