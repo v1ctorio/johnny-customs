@@ -49,6 +49,6 @@ export function currencyToUSD(originCurrency: Currency | string |null, amount: n
 		return 0
 	}
 
-	return amount * currencyData?.inverseRate
+	return Math.trunc(amount * currencyData?.inverseRate)
 }
 

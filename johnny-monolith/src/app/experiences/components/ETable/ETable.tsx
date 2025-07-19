@@ -2,88 +2,73 @@
 
 import classes from './ETable.module.css';
 import { APISubmission } from "@/app/lib/submissions";
-import { Pagination, Stack, Table, TableTd, TableTh, TableThead, TableTr } from "@mantine/core";
-import { useState } from "react";
-
-const mockData: APISubmission[] = [
-  {
-    id: "1",
-    thing: "Framework Laptop 13",
-    thing_id: "framework-13",
-    author: "U123456789",
-    country: "ES",
-    currency: "€",
-    declaredValue: 125000,
-    paidCustoms: 25000,
-    notes: "Standard laptop import, no issues with customs",
-    approved: true,
-    declaredValueUSD: 135000,
-    paidCustomsUSD: 27000
-  },
-  {
-    id: "2",
-    thing: "Steam Deck OLED",
-    thing_id: "steamdeck-oled",
-    author: "U987654321",
-    country: "FR",
-    currency: "€",
-    declaredValue: 65000,
-    paidCustoms: 13000,
-    notes: "Gaming device import, required additional documentation",
-    approved: false,
-    declaredValueUSD: 70200,
-    paidCustomsUSD: 14040
-  },
-  {
-    id: "3",
-    thing: "MacBook Pro M3",
-    thing_id: "mbp-m3",
-    author: "U456789123",
-    country: "CA",
-    currency: "$",
-    declaredValue: 220000,
-    paidCustoms: 44000,
-    notes: "High-value electronics, expedited processing requested",
-    approved: true,
-    declaredValueUSD: 237600,
-    paidCustomsUSD: 47520}]
-
-const fiftinData = new Array(15).fill({
-    id: "1",
-    thing: "Framework Laptop 13",
-    thing_id: "framework-13",
-    author: "U123456789",
-    country: "ES",
-    currency: "€",
-    declaredValue: 125000,
-    paidCustoms: 25000,
-    notes: "Standard laptop import, no issues with customs",
-    approved: true,
-    declaredValueUSD: 135000,
-    paidCustomsUSD: 27000
-  })
+import { Group, NumberFormatter, Pagination, Skeleton, Stack, Switch, Table, TableTd, TableTh, TableThead, TableTr, Text } from "@mantine/core";
+import { useEffect, useState } from "react";
+import { SlackUserButton } from '../SlackUserButton/SlackUserButton';
 
 
-export function ETable({useUSD}:{useUSD?: boolean}){
+const fiftinData: APISubmission[] = new Array(15)
+
+
+export function ETable(){
 
   const [data, setData] = useState(fiftinData)
+  const [isLoading, setIsLoading] = useState(true)
   const [activePage, setActivePage] = useState(1)
+  const [count, setCount] = useState(0)
+  const [useUSD, setUseUSD] = useState(false)
+
+  useEffect(()=>{
+    fetch(`/api/submissions?page=${activePage}`)
+      .then(r => r.json())
+      .then(d=>{
+        setData(d.submissions)
+        setCount(d.total / 15)
+        setIsLoading(false)
+      })
+  },[activePage])
 
     const rows = data.map(r=>{
      return <TableTr key={r.id}>
         <TableTd>{r.id}</TableTd>
         <TableTd>{r.thing}</TableTd>
         {useUSD && <>
-        <TableTd>${r.declaredValueUSD}</TableTd>
-        <TableTd>${r.paidCustomsUSD}</TableTd>
+        <TableTd><NumberFormatter value={r.declared_value_usd/100} thousandSeparator=" " prefix='$'/></TableTd>
+        <TableTd><NumberFormatter value={r.paid_customs_usd/100} thousandSeparator=" " prefix='$'/></TableTd>
         </> }
         {!useUSD && <>
-        <TableTd>{r.declaredValue} {r.currency}</TableTd>
-        <TableTd>{r.paidCustoms} {r.currency}</TableTd>
+        <TableTd><NumberFormatter value={r.declared_value/100} thousandSeparator=" " suffix={` ${r.currency}`}/></TableTd>
+        <TableTd><NumberFormatter value={r.paid_customs/100} thousandSeparator=" " suffix={` ${r.currency}`}/></TableTd>
         </> }
-        <TableTd>{r.author}</TableTd>
+        <TableTd> <SlackUserButton uID={r.submitter}/></TableTd>
      </TableTr>
     })
+
+          if (isLoading) {return (<Stack>
+      <Table miw={600} maw={1400} striped highlightOnHover>
+        <TableThead className={`${classes.header}`}>
+          <TableTr>
+            <TableTh>ID</TableTh>
+            <TableTh>Thing</TableTh>
+            <TableTh>Declared val.</TableTh>
+            <TableTh>Paid</TableTh>
+            <TableTh>Author</TableTh>
+          </TableTr>
+        </TableThead>
+        <Table.Tbody>{new Array(15).fill(true).map((_,i)=>{
+
+          return <TableTr key={i}>
+{new Array(5).fill(true).map((_,i)=> {
+          return <TableTd key={i}><Skeleton height={22.7} styles={{"root":{"margin": "7px 1px"}}} radius="xl" key={i}/></TableTd>
+          })}
+          </TableTr>
+          
+          
+        })}</Table.Tbody>
+      </Table>
+
+      <Pagination disabled total={data.length} value={activePage} onChange={setActivePage}/>
+      </Stack>)}
 
     return (
       <Stack>
@@ -100,7 +85,10 @@ export function ETable({useUSD}:{useUSD?: boolean}){
         <Table.Tbody>{rows}</Table.Tbody>
       </Table>
 
-      <Pagination total={data.length} value={activePage} onChange={setActivePage}/>
+<Group>
+      <Pagination total={count} value={activePage} onChange={setActivePage} w={600}/>
+      <Switch checked={useUSD} onChange={e=>setUseUSD(e.currentTarget.checked)} size='lg' onLabel="USD" offLabel="£¥€"/>
+</Group>
       </Stack>
     )
 }

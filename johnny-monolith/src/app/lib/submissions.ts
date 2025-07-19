@@ -3,7 +3,7 @@
 import { z } from "zod"
 import { db } from "@/db/drizzle"
 import { submissionsTable, thingsTable } from "@/db/schema"
-import { eq } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import { createInsertSchema } from 'drizzle-zod';
 import { countries, countryToCurrency, getCountriesData, getCountryData, validCountryCodes } from "./constants";
 import { sendToSlack } from "./slack";
@@ -20,14 +20,14 @@ export interface APISubmission {
   country: string //2 letter country code
   country_full_name: string
   currency: string; // currency symbol
-  declared_value?: number; // value declared to customs
+  declared_value: number; // value declared to customs
   paid_customs: number
 
   notes?: string; 
   approved: boolean; 
 
-  declared_value_usd?: number;
-  piad_customs_usd?: number
+  declared_value_usd: number;
+  paid_customs_usd: number
 }
 
 const submissionInsertSchema = createInsertSchema(submissionsTable)
@@ -65,10 +65,6 @@ export async function createSubmission({formData, submitter, newThingName}:{form
     //TODO: Fix that thing id could be duplicated and that would do something or idk
     thing = await createThing(newThingName)
     dat = submissionInsertSchema.parse({...dat,thing_id:thing.id})
-  }
-
-  if (!validCountryCodes.includes(dat.country)) {
-    throw new Error("Invalid country code provided")
   }
 
   const newRow = (await db.insert(submissionsTable).values(dat).returning())[0]
@@ -139,4 +135,8 @@ export async function listSubmissions(length: number = 30, offset: number = 0, i
 
 async function dispatchNewRow(submission: typeof submissionsTable.$inferSelect,includesNewThing = false) {
   sendToSlack(`New submission recived \n\n \`\`\`${JSON.stringify(submission)}\`\`\`` + (includesNewThing ? "\n __Adds a new thing__" : ""))
+}
+
+export async function getSubmissionCount(){
+  return (await db.select({count: count()}).from(submissionsTable))[0].count
 }
