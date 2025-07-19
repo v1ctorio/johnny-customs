@@ -1,5 +1,7 @@
+import { countries } from "./constants";
+
 export type Currency = 'USD' | 'EUR' | 'GBP' | 'CAD' | 'CNY' | 'JPY' | 'AUD' | 'CHF' | 'NZD' | 'RUB' | 'INR' | 'ZAR' | 'KRW' | 'BRL' | 'MXN' | 'SGD' | 'HKD' | 'SEK' | 'NOK' | 'DKK' | 'PLN' | 'TRY';
-export type CountryCode = 'ES' | 'CA' | 'UK' | 'US' ;
+export type CountryCode = keyof typeof countries
 
 const USDRate = {
 	rate:1,
@@ -58,13 +60,3 @@ export async function exchangeCurrency(originCurrency: Currency, targetCurrency:
 	return originInUSD * toRate.rate;
 }
 
-export function countryToCurrency(country: CountryCode): Currency | null {
-	const countryMap: Record<CountryCode, Currency> = {
-		'US': 'USD',
-		'CA': 'CAD',
-		'UK': 'GBP',
-		'ES': 'EUR',
-	};
-
-	return countryMap[country] || null;
-}

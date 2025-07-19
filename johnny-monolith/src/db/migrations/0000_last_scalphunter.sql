@@ -8,12 +8,13 @@ CREATE TABLE "submissions" (
 	"declared_value" integer NOT NULL,
 	"paid_customs" integer NOT NULL,
 	"notes" varchar(500),
-	"thing_id" varchar(16) NOT NULL
+	"thing_id" varchar(32) NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "things" (
-	"id" varchar(16) PRIMARY KEY NOT NULL,
-	"name" varchar(64) NOT NULL
+	"id" varchar(32) PRIMARY KEY NOT NULL,
+	"name" varchar(64) NOT NULL,
+	"image" varchar(256)
 );
 --> statement-breakpoint
 ALTER TABLE "submissions" ADD CONSTRAINT "submissions_thing_id_things_id_fk" FOREIGN KEY ("thing_id") REFERENCES "public"."things"("id") ON DELETE no action ON UPDATE no action;

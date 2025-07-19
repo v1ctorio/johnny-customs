@@ -13,11 +13,12 @@ export const submissionsTable = pgTable("submissions", {
 	paid_customs: integer().notNull(), // in cents
 	notes: varchar({length: 500}),
 
-	thing_id: varchar({length: 16}).notNull().references(() => thingsTable.id, { onDelete: 'no action' }), 
+	thing_id: varchar({length: 32}).notNull().references(() => thingsTable.id, { onDelete: 'no action' }), 
 })
 
 
 export const thingsTable = pgTable("things", {
-	id: varchar({length: 16}).primaryKey(), // short unique identifier without special characters
+	id: varchar({length: 32}).primaryKey(), // short unique identifier without special characters
 	name: varchar({length: 64}).notNull(), // full name of the thing
+	image: varchar({length: 256})
 })

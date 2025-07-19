@@ -5,9 +5,10 @@ import { db } from "@/db/drizzle"
 import { submissionsTable, thingsTable } from "@/db/schema"
 import { eq } from "drizzle-orm";
 import { createInsertSchema } from 'drizzle-zod';
-import { validCountryCodes } from "./constants";
+import { countries, validCountryCodes } from "./constants";
 import { sendToSlack } from "./slack";
 import { createThing, getThingById } from "./things";
+import { CountryCode, countryToCurrency, exchangeCurrency } from "./money";
 
 
 export interface APISubmission {
@@ -15,17 +16,18 @@ export interface APISubmission {
   thing: string; // name of the thing customs were paid for
   thing_id: string;
 
-  author: string; // Log author slack id
+  submitter: string; // Log author slack id
   country: string //2 letter country code
+  country_full_name: string
   currency: string; // currency symbol
-  declaredValue?: number; // value declared to customs
-  paidCustoms: number
+  declared_value?: number; // value declared to customs
+  paid_customs: number
 
   notes?: string; 
   approved: boolean; 
 
-  declaredValueUSD?: number;
-  paidCustomsUSD?: number
+  declared_value_usd?: number;
+  piad_customs_usd?: number
 }
 
 const submissionInsertSchema = createInsertSchema(submissionsTable)
@@ -98,19 +100,41 @@ export async function approveSubmission(submission_ID: number,reject = false){
 
 }
 
-export async function listSubmissions(length: number = 30, offset: number = 0, includeUnapproved = false) {
+export async function listSubmissions(length: number = 30, offset: number = 0, includeUnapproved = false): APISubmission[] {
   'use server'
   let submissions
-  let base_query = db.select().from(submissionsTable).orderBy(submissionsTable.id).limit(length).offset(offset)
+  const base_query = db.select().from(submissionsTable).innerJoin(thingsTable,eq(submissionsTable.thing_id, thingsTable.id)).orderBy(submissionsTable.id).limit(length).offset(offset)
   if (!includeUnapproved) {
     submissions = await base_query.where(eq(submissionsTable.approved, true))
   } else {
     submissions = await base_query
   }
 
-  return submissions
+  const returnSubmission: APISubmission[] = submissions.map( async s => {
+
+    const cur =  countryToCurrency[s.submissions.country as CountryCode]
+    return {
+        id: s.submissions.id,
+  thing: s.things.name, 
+  thing_id: s.things.id,
+
+  submitter: s.submissions.submitter,
+  country: s.submissions.country,
+  country_full_name: countries[s.submissions.country as CountryCode],
+  currency: cur,
+  declared_value: s.submissions.declared_value, 
+  paid_customs: s.submissions.paid_customs,
+  notes: s.submissions.notes, 
+  approved: s.submissions.approved, 
+
+  declared_value_usd: await exchangeCurrency(cur,"USD",s.submissions.declared_value),
+  paid_customs_usd: await exchangeCurrency(cur,"USD", s.submissions.paid_customs)
+}
+  })
+
+  return returnSubmission
 }
 
 async function dispatchNewRow(submission: typeof submissionsTable.$inferSelect,includesNewThing = false) {
-  sendToSlack(`New submission recived \n\n \`\`\`${JSON.stringify(submission)}\`\`\`` + includesNewThing ? "\n __Adds a new thing__" : "")
+  sendToSlack(`New submission recived \n\n \`\`\`${JSON.stringify(submission)}\`\`\`` + (includesNewThing ? "\n __Adds a new thing__" : ""))
 }

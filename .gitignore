@@ -143,3 +143,6 @@ bun*
 *sqlite.db*
 .vscode
 api/local.db
+
+
+johnny-monolith/scripts/*.sql

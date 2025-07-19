@@ -48,10 +48,26 @@ const mockData: APISubmission[] = [
     declaredValueUSD: 237600,
     paidCustomsUSD: 47520}]
 
+const fiftinData = new Array(15).fill({
+    id: "1",
+    thing: "Framework Laptop 13",
+    thing_id: "framework-13",
+    author: "U123456789",
+    country: "ES",
+    currency: "€",
+    declaredValue: 125000,
+    paidCustoms: 25000,
+    notes: "Standard laptop import, no issues with customs",
+    approved: true,
+    declaredValueUSD: 135000,
+    paidCustomsUSD: 27000
+  })
+
 
 export function ETable({useUSD}:{useUSD?: boolean}){
 
-  const [data, setData] = useState(mockData)
+  const [data, setData] = useState(fiftinData)
+  const [activePage, setActivePage] = useState(1)
 
     const rows = data.map(r=>{
      return <TableTr key={r.id}>
@@ -84,7 +100,7 @@ export function ETable({useUSD}:{useUSD?: boolean}){
         <Table.Tbody>{rows}</Table.Tbody>
       </Table>
 
-      <Pagination total={data.length}/>
+      <Pagination total={data.length} value={activePage} onChange={setActivePage}/>
       </Stack>
     )
 }
