@@ -2,7 +2,7 @@
 
 import classes from './ETable.module.css';
 import { APISubmission } from "@/app/lib/submissions";
-import { Group, NumberFormatter, Pagination, Skeleton, Stack, Switch, Table, TableTd, TableTh, TableThead, TableTr, Text } from "@mantine/core";
+import { Group, NumberFormatter, Pagination, SegmentedControl, Skeleton, Stack, Switch, Table, TableTd, TableTh, TableThead, TableTr, Text, useMantineTheme } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { SlackUserButton } from '../SlackUserButton/SlackUserButton';
 
@@ -16,7 +16,9 @@ export function ETable(){
   const [isLoading, setIsLoading] = useState(true)
   const [activePage, setActivePage] = useState(1)
   const [count, setCount] = useState(0)
-  const [useUSD, setUseUSD] = useState(false)
+  const [selectedCurrency, setCurrency] = useState('USD')
+
+  const theme = useMantineTheme()
 
   useEffect(()=>{
     fetch(`/api/submissions?page=${activePage}`)
@@ -32,11 +34,11 @@ export function ETable(){
      return <TableTr key={r.id}>
         <TableTd>{r.id}</TableTd>
         <TableTd>{r.thing}</TableTd>
-        {useUSD && <>
+        {selectedCurrency==="USD" && <>
         <TableTd><NumberFormatter value={r.declared_value_usd/100} thousandSeparator=" " prefix='$'/></TableTd>
         <TableTd><NumberFormatter value={r.paid_customs_usd/100} thousandSeparator=" " prefix='$'/></TableTd>
         </> }
-        {!useUSD && <>
+        {selectedCurrency!=="USD" && <>
         <TableTd><NumberFormatter value={r.declared_value/100} thousandSeparator=" " suffix={` ${r.currency}`}/></TableTd>
         <TableTd><NumberFormatter value={r.paid_customs/100} thousandSeparator=" " suffix={` ${r.currency}`}/></TableTd>
         </> }
@@ -85,9 +87,9 @@ export function ETable(){
         <Table.Tbody>{rows}</Table.Tbody>
       </Table>
 
-<Group>
+<Group justify='space-between'>
       <Pagination total={count} value={activePage} onChange={setActivePage} w={600}/>
-      <Switch checked={useUSD} onChange={e=>setUseUSD(e.currentTarget.checked)} size='lg' onLabel="USD" offLabel="£¥€"/>
+      <SegmentedControl withItemsBorders data={['USD','£¥€']} value={selectedCurrency} onChange={setCurrency} styles={{'indicator':{backgroundColor:theme.colors?.blue[9]}}} radius="xl"/>
 </Group>
       </Stack>
     )

@@ -1,11 +1,10 @@
 'use server';
 
-import { z } from "zod"
 import { db } from "@/db/drizzle"
 import { submissionsTable, thingsTable } from "@/db/schema"
 import { count, eq } from "drizzle-orm";
 import { createInsertSchema } from 'drizzle-zod';
-import { countries, countryToCurrency, getCountriesData, getCountryData, validCountryCodes } from "./constants";
+import { countries, countryToCurrency, getCountriesData } from "./constants";
 import { sendToSlack } from "./slack";
 import { createThing, getThingById } from "./things";
 import { CountryCode, currencyToUSD } from "./money";
@@ -32,31 +31,16 @@ export interface APISubmission {
 
 const submissionInsertSchema = createInsertSchema(submissionsTable)
 
+export type submissionInsert = typeof submissionsTable.$inferInsert
 
-export async function createSubmission({formData, submitter, newThingName}:{formData: FormData, submitter: string,newThingName?:string}
-) {
-  const thing_id = formData.get('thing_id')
-  const notes = formData.get('notes')
-  const payment_date = formData.get('payment_date')
-  const country = formData.get('country')
-  const declared_value = formData.get('declared_value')
-  const paid_customs = formData.get('paid_customs')
+export async function createSubmission(insertData:submissionInsert, newThingName? :string){
+ 
+  let ID = submissionInsertSchema.parse(insertData)
 
 
 
 
-  let dat = submissionInsertSchema.parse({
-    thing_id,
-    notes,
-    payment_date: payment_date ? new Date(payment_date as string) : new Date(),
-    country,
-    declared_value: parseInt(declared_value as string, 10),
-    paid_customs: parseInt(paid_customs as string, 10),
-    submitter,
-
-  })
-
-  let thing = await getThingById(dat.thing_id)
+  let thing = await getThingById(ID.thing_id)
 
   if (!thing) {
     if(!newThingName) {
@@ -64,10 +48,10 @@ export async function createSubmission({formData, submitter, newThingName}:{form
       }
     //TODO: Fix that thing id could be duplicated and that would do something or idk
     thing = await createThing(newThingName)
-    dat = submissionInsertSchema.parse({...dat,thing_id:thing.id})
+    ID = submissionInsertSchema.parse({...insertData,thing_id:thing.id})
   }
 
-  const newRow = (await db.insert(submissionsTable).values(dat).returning())[0]
+  const newRow = (await db.insert(submissionsTable).values(ID).returning())[0]
 
   await dispatchNewRow(newRow, !!newThingName)
   return newRow

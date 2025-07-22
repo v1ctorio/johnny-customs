@@ -7,7 +7,7 @@ export default function ExperiencesPage(){
 
         <Group justify="space-between">
             <Title>Experiences</Title>
-            <Button>Add my experience</Button>
+            <a href="/experiences/add"><Button>Add my experience</Button></a>
         </Group>
     <ETable />
         </Stack>

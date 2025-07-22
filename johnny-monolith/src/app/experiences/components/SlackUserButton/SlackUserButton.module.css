@@ -1,11 +1,12 @@
 .user {
   display: block;
   width: 100%;
-  padding: var(--mantine-spacing-md);
+  padding: 0;
   color: light-dark(var(--mantine-color-black), var(--mantine-color-dark-0));
 
+  border-radius: 7px;
   @mixin hover {
-    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8));
+    box-shadow: 2px 2px 0px rgba(105, 105, 105, 0.281)
   }
 }
 
@@ -16,6 +17,7 @@
   max-width: 200px;
   padding: 2px 4px;
   container-type: inline-size;
+  color: rgba(105, 105, 105, 0.281);
 }
 .marquee > * {
   animation: marquee 5s linear infinite both alternate;
