@@ -118,7 +118,7 @@ export default function Header({active}:{active?:string} = {active:""}) {
 
             {butns.map(b => {
             
-            return <a href={`/${b.href}`} className={`${classes.link} ${active === b.href ? classes.activelink: ""}`}>{b.caption}</a>
+            return <a key={b.caption} href={`/${b.href}`} className={`${classes.link} ${active === b.href ? classes.activelink: ""}`}>{b.caption}</a>
             })}
 
 

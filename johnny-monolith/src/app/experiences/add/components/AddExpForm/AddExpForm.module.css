@@ -6,6 +6,7 @@
 }
 .subbox {
 	padding: 6px 0px;
+	width: 200px;
 }
 
 .label {
@@ -27,5 +28,5 @@
 
 .countrymoneygrp {
 	align-items: flex-end;
-	gap: 50px
+	gap: 30px
 }

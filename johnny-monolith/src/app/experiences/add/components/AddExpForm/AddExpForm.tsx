@@ -2,11 +2,12 @@
 
 import { SlackUserButton } from "@/app/experiences/components/SlackUserButton/SlackUserButton";
 import { countriesData, countriesData, countriesData, submissionsTable, thingsTable } from "@/db/schema";
-import { Autocomplete, Box, Button, Flex, Group, Input, InputWrapper, NativeSelect, NumberInput, Select, Stack, Text, Textarea, TextInput, UnstyledButton, useMantineTheme } from "@mantine/core";
+import { Box, Button,Group,InputWrapper, NativeSelect, NumberInput, Select, Space, Stack, Text, Textarea, TextInput, UnstyledButton, useMantineTheme } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import classes from './AddExpForm.module.css'
-import { DateInput, DatePickerInput } from "@mantine/dates";
+import { DatePickerInput } from "@mantine/dates";
+import { useSession,signIn } from "next-auth/react";
 
 export function AddExpForm({submitterID}:{submitterID:string}) {
 
@@ -15,6 +16,8 @@ export function AddExpForm({submitterID}:{submitterID:string}) {
 	const [thingsList,setThingsList] = useState<{label:string,value:string}[]>([])
 	const [CD,setCD] = useState<typeof countriesData.$inferSelect[]>([])
 
+		const { data: session } = useSession()
+	
 	const [submitNewItem, setSubmitNewItem] = useState(false)
 
 	useEffect(()=>{
@@ -71,28 +74,34 @@ form.watch('country',({value})=>{
 					{submitNewItem ? manualThingInput() : selectThingInput()}
 
 
-				<Group className={classes.countrymoneygrp}>
-					<NativeSelect classNames={{input:classes.input,label:classes.label}} withAsterisk maw={150} label="Country"  data={CD.map(c=>{return {label:c.full_name,value:c.iso3316_1a2}})} key={form.key('country')} {...form.getInputProps('country')}/>
-			
-					<NumberInput withAsterisk decimalScale={2} allowNegative={false} classNames={{label:classes.label,input:classes.ninput}} label="Declared value" suffix={' '+currencyValue} key={form.key('declared_value')} {...form.getInputProps('declared_value')}/>
-					<NumberInput withAsterisk decimalScale={2} allowNegative={false} classNames={{label:classes.label,input:classes.ninput}} label="Paid fees" suffix={' '+currencyValue} key={form.key('paid_customs')} {...form.getInputProps('paid_customs')}/>
-					<TextInput classNames={{label:classes.label}} disabled variant="filled" label="Currency" styles={{input:{textAlign:"center"}}} value={currencyValue} maw="70px"/*Is client display only. It's not sent to the server since it's assumed there*//>
-				
-				</Group>
+				{countryAndMoneyGroup()}
 
 				{paymentDateInput()}
 					
 				{notesInput()}
 
+				<Space h="md"/>
+
 				<Group justify="space-between" align="center">
 
 				{submittingAsCard()}
-				<Button size="md" type="submit">Submit</Button>
+				<Button disabled={!session} size="md" type="submit">Submit</Button>
 				</Group>
 
 			</form>
 			</Stack>
 	)
+
+	function countryAndMoneyGroup() {
+		return <Group className={classes.countrymoneygrp}>
+			<NativeSelect classNames={{ input: classes.input, label: classes.label }} withAsterisk maw={150} label="Country" data={CD.map(c => { return { label: c.full_name, value: c.iso3316_1a2 }; })} key={form.key('country')} {...form.getInputProps('country')} />
+
+			<NumberInput withAsterisk decimalScale={2} allowNegative={false} classNames={{ label: classes.label, input: classes.ninput }} label="Declared value" suffix={' ' + currencyValue} key={form.key('declared_value')} {...form.getInputProps('declared_value')} />
+			<NumberInput withAsterisk decimalScale={2} allowNegative={false} classNames={{ label: classes.label, input: classes.ninput }} label="Paid fees" suffix={' ' + currencyValue} key={form.key('paid_customs')} {...form.getInputProps('paid_customs')} />
+			<TextInput style={{marginLeft:"auto",marginRight:"0px"}} classNames={{ label: classes.label }} disabled variant="filled" label="Currency" styles={{ input: { textAlign: "center" } }} value={currencyValue} maw="70px" /*Is client display only. It's not sent to the server since it's assumed there*/ />
+
+		</Group>;
+	}
 
 	function notesInput() {
 		return <Textarea classNames={{ label: classes.label }} label="Notes" description="Additional notes that could be useful for other hackclubbers. (optional)" key={form.key('notes')} {...form.getInputProps('notes')} />;
@@ -119,10 +128,14 @@ form.watch('country',({value})=>{
 	}
 
 	function submittingAsCard() {
-		return <InputWrapper label="Submitting as" classNames={{ label: classes.label }}>
+		// eslint-disable-next-line curly
+		if (session) return <InputWrapper label="Submitting as" classNames={{ label: classes.label }}>
 			<Box className={classes.subbox}>
-				<SlackUserButton uID={submitterID} className={classes.sub} />
+				<SlackUserButton innerPadding="sm" uID={submitterID} className={classes.sub} />
 			</Box>
 		</InputWrapper>;
+		return <InputWrapper label="Submitting as" classNames={{ label: classes.label }}> <Box className={classes.subbox}><UnstyledButton p="sm" onClick={()=>signIn("slack")} className={classes.sub} style={{display:"block",width:"100%"}}><Text size="xs">
+			Log-in with <b>Slack</b> to be able to submit your experience.
+			</Text></UnstyledButton></Box></InputWrapper>
 	}
 }

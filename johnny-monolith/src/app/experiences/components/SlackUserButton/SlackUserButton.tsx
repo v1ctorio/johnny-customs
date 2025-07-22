@@ -15,10 +15,11 @@ export interface CachetUserData {
 
 interface SlackUserButtonProps extends UnstyledButtonProps {
 	uID: string;
+	innerPadding?: string;
 	catMode?:boolean;
 }
 
-export function SlackUserButton({uID, catMode = false, styles, className}:SlackUserButtonProps) {
+export function SlackUserButton({uID, catMode = false, styles, className, innerPadding = ""}:SlackUserButtonProps) {
 	const [user, setUser] = useState<CachetUserData|null>(null)
 	
 	
@@ -32,12 +33,11 @@ export function SlackUserButton({uID, catMode = false, styles, className}:SlackU
 
 
 	return <UnstyledButton className={`${classes.button} ${classes.user} ${className}`} styles={styles} component="a" target="_blank" rel="noopener noreferrer" href={"https://hackclub.slack.com/team/"+uID}>
-		<Group >
+		<Group p={innerPadding}>
 			<Avatar variant="filled" src={ catMode ? "https://placecats.com/300/300" : user ? user.image ? user.image : "https://avatars.githubusercontent.com/u/10137?v=4" : ""}/>
 			        <div style={{ flex: 1 }}>
     <div
       className={user && user?.displayName?.length > 15 ? classes.marquee : classes.singleLine}
-      
     >
           <Text size="sm" fw={500} component="span">
             {user ? user.displayName ? user.displayName : "Ghost" : "Slack user"}
