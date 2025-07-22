@@ -42,7 +42,7 @@ export function AddExpForm({submitterID}:{submitterID:string}) {
 					<Stack w={800}>
 
 			<form>
-				<Select clearable auto label="Thing" withAsterisk description="Item you paid customs for." data={thingsList} key={form.key('thing_id')}/>
+				<Select clearable autoSelectOnBlur searchable label="Thing" withAsterisk description="Item you paid customs for." data={thingsList} key={form.key('thing_id')}/>
 				{!submitNewItem && <Text size="xs">The item you recived is not in the list? <Text span c="blue" style={{"cursor":"pointer"}} onClick={()=> setSubmitNewItem(true) }>Click here to add a new one</Text>.</Text>}
 				<Textarea label="Notes" description="Additional notes. (optional)" key={form.key('notes')}/>
 				<InputWrapper label="Submitting as">
