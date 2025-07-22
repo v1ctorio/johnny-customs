@@ -20,24 +20,24 @@
   "dependencies": {
     "@mantine/core": "8.2.1",
     "@mantine/hooks": "8.2.1",
-    "@next/bundle-analyzer": "^15.3.3",
-    "@tabler/icons-react": "^3.34.0",
-    "next": "15.3.3",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
+    "@next/bundle-analyzer": "^15.3.3",
     "@next/mdx": "^15.3.3",
+    "@tabler/icons-react": "^3.34.0",
     "@types/mdx": "^2.0.13",
     "drizzle-orm": "^0.44.2",
     "drizzle-zod": "^0.8.2",
+    "next": "15.3.3",
     "next-auth": "^5.0.0-beta.29",
     "pg": "^8.16.3",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "rehype-slug": "^6.0.0",
     "zod": "^3.25.67"
   },
   "devDependencies": {
-        "@babel/core": "^7.27.4",
+    "@babel/core": "^7.27.4",
     "@eslint/js": "^9.29.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.4.2",
     "@storybook/nextjs": "^8.6.8",
@@ -49,8 +49,10 @@
     "@types/eslint-plugin-jsx-a11y": "^6",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.13.11",
+    "@types/pg": "^8.15.4",
     "@types/react": "19.1.8",
     "babel-loader": "^10.0.0",
+    "drizzle-kit": "^0.31.4",
     "eslint": "^9.29.0",
     "eslint-config-mantine": "^4.0.3",
     "eslint-plugin-jsx-a11y": "^6.10.2",
@@ -67,10 +69,7 @@
     "stylelint-config-standard-scss": "^15.0.1",
     "ts-jest": "^29.4.0",
     "typescript": "5.8.3",
-    "typescript-eslint": "^8.34.0",
-    "@types/pg": "^8.15.4",
-    "drizzle-kit": "^0.31.4"
-
+    "typescript-eslint": "^8.34.0"
   },
   "packageManager": "yarn@4.9.1"
 }
