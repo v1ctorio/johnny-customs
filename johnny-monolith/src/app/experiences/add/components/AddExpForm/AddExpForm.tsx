@@ -2,24 +2,14 @@
 
 import { SlackUserButton } from "@/app/experiences/components/SlackUserButton/SlackUserButton";
 import { countriesData, countriesData, countriesData, submissionsTable, thingsTable } from "@/db/schema";
-import { Autocomplete, Box, Button, Flex, Group, Input, InputWrapper, NativeSelect, Select, Stack, Text, Textarea, TextInput, UnstyledButton, useMantineTheme } from "@mantine/core";
+import { Autocomplete, Box, Button, Flex, Group, Input, InputWrapper, NativeSelect, NumberInput, Select, Stack, Text, Textarea, TextInput, UnstyledButton, useMantineTheme } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useEffect, useMemo, useState } from "react";
 import classes from './AddExpForm.module.css'
 import { DateInput, DatePickerInput } from "@mantine/dates";
 
 export function AddExpForm({submitterID}:{submitterID:string}) {
-	type submitData = {
-    payment_date: string;
-    submitter: string;
-    country: string;
-    declared_value: number;
-    paid_customs: number;
-    thing_id: string;
-    submission_time?: Date | undefined;
-    approved?: boolean | undefined;
-    notes?: string | null | undefined;
-}
+
 
 	type submitData = typeof submissionsTable.$inferInsert
 	const [thingsList,setThingsList] = useState<{label:string,value:string}[]>([])
@@ -50,18 +40,22 @@ export function AddExpForm({submitterID}:{submitterID:string}) {
 			initialValues: {
 				thing: "",
 				country: "",
+				declared_value: 0,
+				paid_customs: 0,
 				payment_date: null,
 				notes: ""
 			},
 			validate: {
 				thing: t=> t === "" ? "Thing can't be empty" : t.length>64 ? "Thing name should be shorter than 64 characters.": null,
 				payment_date: d => d != null ? isNaN(new Date(d as unknown as string).getTime()) ? "Invalid date provided" : null : "Date of payment can't be empty",
-			  country: c=>c.length !== 2 ? "Invalid country provided": null
+			  country: c=>c.length !== 2 ? "Invalid country provided": null,
+				declared_value: n=>isNaN(n) ? "Invalid amount": null,
+				paid_customs: n=>isNaN(n) ? "Invalid amount": null
 			}
 		})
 
 
-		const [currencyValue, setCurrencyValue] = useState("")
+		const [currencyValue, setCurrencyValue] = useState("AFN")
 
 form.watch('country',({value})=>{
 
@@ -78,8 +72,12 @@ form.watch('country',({value})=>{
 
 
 				<Group className={classes.countrymoneygrp}>
-					<NativeSelect maw={180} label="Country" classNames={{label:classes.label}}  data={CD.map(c=>{return {label:c.full_name,value:c.iso3316_1a2}})} key={form.key('country')} {...form.getInputProps('country')}/>
-				<TextInput disabled variant="filled" label="Currency" value={currencyValue} /*Is client display only. It's not sent to the server since it's assumed there*//>
+					<NativeSelect classNames={{input:classes.input,label:classes.label}} withAsterisk maw={150} label="Country"  data={CD.map(c=>{return {label:c.full_name,value:c.iso3316_1a2}})} key={form.key('country')} {...form.getInputProps('country')}/>
+			
+					<NumberInput withAsterisk decimalScale={2} allowNegative={false} classNames={{label:classes.label,input:classes.ninput}} label="Declared value" suffix={' '+currencyValue} key={form.key('declared_value')} {...form.getInputProps('declared_value')}/>
+					<NumberInput withAsterisk decimalScale={2} allowNegative={false} classNames={{label:classes.label,input:classes.ninput}} label="Paid fees" suffix={' '+currencyValue} key={form.key('paid_customs')} {...form.getInputProps('paid_customs')}/>
+					<TextInput classNames={{label:classes.label}} disabled variant="filled" label="Currency" styles={{input:{textAlign:"center"}}} value={currencyValue} maw="70px"/*Is client display only. It's not sent to the server since it's assumed there*//>
+				
 				</Group>
 
 				{paymentDateInput()}
@@ -112,7 +110,7 @@ form.watch('country',({value})=>{
 	}
 
 	function manualThingInput() {
-		return <><TextInput variant="filled" label="Thing" description="Item you paid customs for." classNames={{ label: classes.label, input: classes.input }} withAsterisk key={form.key('thing')} {...form.getInputProps('thing')} />
+		return <><TextInput variant="filled" label="Thing" description="Item you paid customs for." classNames={{ label: classes.label, input: classes.input+' '+classes.warning }} withAsterisk key={form.key('thing')} {...form.getInputProps('thing')} />
 
 			<Text size="xs" c="orange">Are you sure the item you recived is not on the list?
 				<Text span c="blue" style={{ "cursor": "pointer" }} onClick={() => setSubmitNewItem(false)}> Click here to see the list again</Text>

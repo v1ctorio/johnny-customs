@@ -11,12 +11,21 @@
 .label {
 	font-weight: 600;
 }
-
+.warning {
+	outline: 1px solid orange;
+}
 .input {
 	font-weight: normal;
-	outline: 1px solid orange;
+}
+.ninput {
+	font-weight: 400;
+	font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+
+	width: 120px;
+	overflow: visible;
 }
 
 .countrymoneygrp {
 	align-items: flex-end;
+	gap: 50px
 }
