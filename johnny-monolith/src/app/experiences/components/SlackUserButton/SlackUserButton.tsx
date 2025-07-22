@@ -18,7 +18,7 @@ interface SlackUserButtonProps extends UnstyledButtonProps {
 	catMode?:boolean;
 }
 
-export function SlackUserButton({uID, catMode = false, styles}:SlackUserButtonProps) {
+export function SlackUserButton({uID, catMode = false, styles, className}:SlackUserButtonProps) {
 	const [user, setUser] = useState<CachetUserData|null>(null)
 	
 	
@@ -31,7 +31,7 @@ export function SlackUserButton({uID, catMode = false, styles}:SlackUserButtonPr
 	},[])
 
 
-	return <UnstyledButton className={`${classes.button} ${classes.user}`} styles={styles} component="a" target="_blank" rel="noopener noreferrer" href={"https://hackclub.slack.com/team/"+uID}>
+	return <UnstyledButton className={`${classes.button} ${classes.user} ${className}`} styles={styles} component="a" target="_blank" rel="noopener noreferrer" href={"https://hackclub.slack.com/team/"+uID}>
 		<Group >
 			<Avatar variant="filled" src={ catMode ? "https://placecats.com/300/300" : user ? user.image ? user.image : "https://avatars.githubusercontent.com/u/10137?v=4" : ""}/>
 			        <div style={{ flex: 1 }}>

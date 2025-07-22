@@ -1,0 +1,22 @@
+.sub {
+	background-color: light-dark(var(--mantine-color-gray-1),var(--mantine-color-gray-9));
+	border: 1px solid light-dark(aliceblue,black) ;
+	border-radius: 7px;
+	padding: 5px;
+}
+.subbox {
+	padding: 6px 0px;
+}
+
+.label {
+	font-weight: 600;
+}
+
+.input {
+	font-weight: normal;
+	outline: 1px solid orange;
+}
+
+.countrymoneygrp {
+	align-items: flex-end;
+}

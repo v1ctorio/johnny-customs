@@ -2,7 +2,7 @@ import { date, pgTable, integer, varchar, boolean, timestamp, doublePrecision } 
 
 export const submissionsTable = pgTable("submissions", {
 	id: integer().primaryKey().generatedAlwaysAsIdentity(),
-	payment_date: date().notNull(),
+	payment_date: date().notNull(), //Date format YYYY-MM-DD
 	submission_time: timestamp().defaultNow().notNull(),
 
 
