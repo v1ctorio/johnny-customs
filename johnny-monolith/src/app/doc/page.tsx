@@ -1,7 +1,7 @@
 import Header from "@/components/Header/Header";
 import { AppShellHeader, AppShellMain, AppShellNavbar, Text, Title } from "@mantine/core";
 import DocNavBar from "./NavBar/NavBar";
-import { pages } from "./[slug]/page";
+import { pages } from "./pages";
 
 export default async function Page(){
 
