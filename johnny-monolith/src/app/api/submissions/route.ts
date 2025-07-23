@@ -1,7 +1,14 @@
 import { getSubmissionCount, listSubmissions } from "@/app/lib/submissions";
-import { NextRequest } from "next/server";
+import { auth } from "@/auth";
 
-export async function GET(req:NextRequest) {
+
+export const GET = auth(async(req) =>{
+	if(!req.auth) {
+		return Response.json({message:"Unauthenticated"},{status:401})
+	}
+	if (!req.auth.user) {
+		return Response.json({message:"Unauthenticated"},{status:401})
+	}
 	const params = req.nextUrl.searchParams
 
 	const page = params.get("page") || '1'
@@ -24,4 +31,4 @@ export async function GET(req:NextRequest) {
 	const total = await getSubmissionCount()
 
 	return Response.json({submissions, total}, {status: 200})
-}
+})

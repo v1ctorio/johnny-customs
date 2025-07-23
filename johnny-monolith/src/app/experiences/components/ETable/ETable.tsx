@@ -22,11 +22,21 @@ export function ETable(){
 
   useEffect(()=>{
     fetch(`/api/submissions?page=${activePage}`)
-      .then(r => r.json())
+    .then(r => {
+        if (!r.ok) {
+            throw new Error(`HTTP error! status: ${r.status}`);
+        }
+        return r.json();
+    })
       .then(d=>{
         setData(d.submissions)
         setCount(Math.ceil(d.total / 15 ))
         setIsLoading(false)
+      })
+      .catch(e=>{
+        console.error("Error fetching submissions:",e)
+        // eslint-disable-next-line no-alert
+        alert("Error fetching submissions. Try to log-in with slack first: "+e.message)
       })
   },[activePage])
 

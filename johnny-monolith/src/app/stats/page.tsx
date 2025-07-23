@@ -1,8 +1,16 @@
+import { Container, Stack, Text, Title } from "@mantine/core";
+
 export default function StatsPage() {
 	return (
-		<div>
-			<h1>Stats Page</h1>
-			<p>This is the stats page of the Johnny Customs app.</p>
-		</div>
+		<Container>
+						<Stack gap="xl">
+		<Title>Stats</Title>
+<Text size="lg">
+		Work in progress section. I'm working on it! Look at my progress in the <a href="https://github.com/v1ctorio/johnny-customs">source code</a>.
+
+</Text>
+						</Stack>
+		
+				</Container>
 	);
 }
