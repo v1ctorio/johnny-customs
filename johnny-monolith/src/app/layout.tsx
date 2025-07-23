@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: any }) {
         />
       </head>
       <body>
-        <MantineProvider theme={theme}>
+        <MantineProvider theme={theme} defaultColorScheme='auto'>
         <SessionProvider >
           {children}
           </SessionProvider>        

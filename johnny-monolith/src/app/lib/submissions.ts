@@ -37,9 +37,6 @@ export async function createSubmission(insertData:submissionInsert, newThingName
  
   let ID = submissionInsertSchema.parse(insertData)
 
-
-
-
   let thing = await getThingById(ID.thing_id)
 
   if (!thing) {

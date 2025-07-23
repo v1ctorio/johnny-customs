@@ -25,7 +25,7 @@ export function ETable(){
       .then(r => r.json())
       .then(d=>{
         setData(d.submissions)
-        setCount(d.total / 15)
+        setCount(Math.ceil(d.total / 15 ))
         setIsLoading(false)
       })
   },[activePage])
