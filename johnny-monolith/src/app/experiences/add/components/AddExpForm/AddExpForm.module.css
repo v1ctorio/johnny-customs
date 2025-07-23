@@ -1,0 +1,32 @@
+.sub {
+	background-color: light-dark(var(--mantine-color-gray-1),var(--mantine-color-gray-9));
+	border: 1px solid light-dark(aliceblue,black) ;
+	border-radius: 7px;
+	padding: 5px;
+}
+.subbox {
+	padding: 6px 0px;
+	width: 200px;
+}
+
+.label {
+	font-weight: 600;
+}
+.warning {
+	outline: 1px solid orange;
+}
+.input {
+	font-weight: normal;
+}
+.ninput {
+	font-weight: 400;
+	font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+
+	width: 120px;
+	overflow: visible;
+}
+
+.countrymoneygrp {
+	align-items: flex-end;
+	gap: 30px
+}

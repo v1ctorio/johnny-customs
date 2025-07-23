@@ -78,7 +78,6 @@ web_modules/
 .env.test.local
 .env.production.local
 .env.local
-.env.vault
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -129,21 +128,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-*.sqlite
 
-.env*
-.flaskenv*
-!.env.project
-!.env.vault
-# bun
-.bun
-bun*
-
-*v1data.*
-*sqlite.db*
-.vscode
-api/local.db
-
-
-johnny-monolith/scripts/*.sql
+.DS_Store
 certificates
