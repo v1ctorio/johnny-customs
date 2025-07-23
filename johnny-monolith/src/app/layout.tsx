@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: any }) {
   return (
     <html lang="en" {...mantineHtmlProps}>
       <head>
-        <ColorSchemeScript />
+        <ColorSchemeScript defaultColorScheme='dark'/>
         <link rel="shortcut icon" href="/passc_yel.jpg" />
         <meta
           name="viewport"
@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: any }) {
         />
       </head>
       <body style={{minHeight: '100vh', display: 'flex', flexDirection: 'column'}}>
-        <MantineProvider theme={theme} >
+        <MantineProvider theme={theme} defaultColorScheme='dark'>
         <SessionProvider>
 {children}
           </SessionProvider>        
