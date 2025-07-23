@@ -41,7 +41,8 @@ export function AddExpForm({submitterID}:{submitterID:string}) {
 		const form = useForm({
 			mode: "uncontrolled",
 			initialValues: {
-				thing: "",
+				thing_id: "",
+				thing_name: "",
 				country: "",
 				declared_value: 0,
 				paid_customs: 0,
@@ -49,7 +50,8 @@ export function AddExpForm({submitterID}:{submitterID:string}) {
 				notes: ""
 			},
 			validate: {
-				thing: t=> t === "" ? "Thing can't be empty" : t.length>64 ? "Thing name should be shorter than 64 characters.": null,
+				thing_name: t=> !submitNewItem ? null : t === "" ? "Thing can't be empty" : t.length>64 ? "Thing name must be shorter than 64 characters.": null,
+				thing_id: t=> submitNewItem ? null : t === "" ? "Thing can't be empty" : t.length>34 ? "Thing name can't be longer than 32 characters.": null,
 				payment_date: d => d != null ? isNaN(new Date(d as unknown as string).getTime()) ? "Invalid date provided" : null : "Date of payment can't be empty",
 			  country: c=>c.length !== 2 ? "Invalid country provided": null,
 				declared_value: n=>isNaN(n) ? "Invalid amount": null,
@@ -68,7 +70,7 @@ form.watch('country',({value})=>{
 
   const handleSubmit = (values: typeof form.values) => {
     console.log(values);
-		fetch('/api/submissions/new',{body:JSON.stringify(values),method:"POST"})
+		fetch('/api/submissions/new',{body:JSON.stringify({...values, create_new_thing: submitNewItem}),method:"POST"})
   };
 
 	return(
@@ -118,14 +120,14 @@ form.watch('country',({value})=>{
 	}
 
 	function selectThingInput() {
-		return <><Select disabled={!isLoggedIn} clearable autoSelectOnBlur searchable classNames={{ label: classes.label }} label="Thing" withAsterisk description="Item you paid customs for." data={thingsList} key={form.key('thing_id')} {...form.getInputProps('thing')} />
+		return <><Select disabled={!isLoggedIn} clearable autoSelectOnBlur searchable classNames={{ label: classes.label }} label="Thing" withAsterisk description="Item you paid customs for." data={thingsList} key={form.key('thing_id')} {...form.getInputProps('thing_id')} />
 			<Text size="xs">The item you recived is not in the list?
 				<Text span c="blue" style={{ "cursor": "pointer" }} onClick={() => setSubmitNewItem(true)}> Click here to add a new one</Text>
 				.</Text></>;
 	}
 
 	function manualThingInput() {
-		return <><TextInput disabled={!isLoggedIn} variant="filled" label="Thing" description="Item you paid customs for." classNames={{ label: classes.label, input: classes.input+' '+classes.warning }} withAsterisk key={form.key('thing')} {...form.getInputProps('thing')} />
+		return <><TextInput disabled={!isLoggedIn} variant="filled" label="Thing" description="Item you paid customs for." classNames={{ label: classes.label, input: classes.input+' '+classes.warning }} withAsterisk key={form.key('thing_name')} {...form.getInputProps('thing_name')} />
 
 			<Text size="xs" c="orange">Are you sure the item you recived is not on the list?
 				<Text span c="blue" style={{ "cursor": "pointer" }} onClick={() => setSubmitNewItem(false)}> Click here to see the list again</Text>

@@ -3,7 +3,6 @@
 import { db } from "@/db/drizzle"
 import { submissionsTable, thingsTable } from "@/db/schema"
 import { count, eq } from "drizzle-orm";
-import { createInsertSchema } from 'drizzle-zod';
 import { countries, countryToCurrency, getCountriesData } from "./constants";
 import { sendToSlack } from "./slack";
 import { createThing, getThingById } from "./things";
@@ -29,26 +28,12 @@ export interface APISubmission {
   paid_customs_usd: number
 }
 
-const submissionInsertSchema = createInsertSchema(submissionsTable)
 
 export type submissionInsert = typeof submissionsTable.$inferInsert
 
 export async function createSubmission(insertData:submissionInsert, newThingName? :string){
  
-  let ID = submissionInsertSchema.parse(insertData)
-
-  let thing = await getThingById(ID.thing_id)
-
-  if (!thing) {
-    if(!newThingName) {
-        throw new Error("No thing name provider neither valid thing_id")
-      }
-    //TODO: Fix that thing id could be duplicated and that would do something or idk
-    thing = await createThing(newThingName)
-    ID = submissionInsertSchema.parse({...insertData,thing_id:thing.id})
-  }
-
-  const newRow = (await db.insert(submissionsTable).values(ID).returning())[0]
+  const newRow = (await db.insert(submissionsTable).values(insertData).returning())[0]
 
   await dispatchNewRow(newRow, !!newThingName)
   return newRow

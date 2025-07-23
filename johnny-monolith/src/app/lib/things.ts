@@ -16,10 +16,12 @@ export async function getThingById(id: string) {
 	return thing;
 }
 
-export async function createThing(name: string) {
+export async function createThing(name: string, id:string) {
 
+	if(id.length > 32) {
+		throw new Error('Thing id must be 32 characters or less ')
+	}
 
-	const id = name.trim().replace(/[\W]/g,'').substring(0,16).toLowerCase(); //generate the id by removing spaces and non alphanumeric chars and cutting it at 16 chars
 	if (name.length > 64) {
 		throw new Error('Thing full name must be 64 characters or less');
 	}
@@ -27,4 +29,3 @@ export async function createThing(name: string) {
 	revalidatePath('/api/things');
 	return newThing[0];
 }
-
