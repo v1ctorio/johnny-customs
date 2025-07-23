@@ -4,7 +4,7 @@
 import Header from "@/components/Header/Header";
 import { AppShellHeader, AppShellMain, AppShellNavbar } from "@mantine/core";
 import DocNavBar from "../NavBar/NavBar";
-
+import {pages} from "../pages"
 
 export interface countryData {
   country_full_name: string; // Country full name in the native language and script. If more than one or doubt, fallback to english name 
@@ -15,14 +15,6 @@ export interface countryData {
 
 
 
-export const pages: countryData[] = [
-	{
-		country_full_name: "España",
-		country_code: "es",
-		currency: "EUR",
-		flag: "🇪🇸"
-	}
-] 
 
 
 export async function generateStaticParams() {
@@ -48,7 +40,7 @@ export default async function Page({
 			</AppShellHeader>
 			
 			<AppShellNavbar>
-				<DocNavBar active={slug} countries={pages}/>
+				<DocNavBar active={slug} countries={pages as any}/>
 			</AppShellNavbar>
 
 			<AppShellMain 
@@ -58,5 +50,3 @@ export default async function Page({
             </AppShellMain>
             </>
 }
-
-export const dynamicParams = false
