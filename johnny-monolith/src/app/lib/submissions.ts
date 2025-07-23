@@ -44,13 +44,6 @@ export async function deleteSubmission(submission_id: number) {
   await db.delete(submissionsTable).where(eq(submissionsTable.id,submission_id))
 }
 
-export async function updateSubmission(formData: FormData) {
-  const id = formData.get('id')
-  const title = formData.get('title')
-  const content = formData.get('content')
-
-  return null as any as [] 
-}
 
 export async function approveSubmission(submission_ID: number,reject = false){
   await db

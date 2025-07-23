@@ -1,0 +1,44 @@
+.title{
+	font-size: 5rem;
+	white-space: pre-wrap;
+	text-indent: 0;
+	line-height: 1.5;
+}
+
+.description{
+	font-size: 1.2rem;
+	white-space: pre-wrap;
+	text-indent: 0;
+	line-height: 1.5;
+}
+
+.mark {
+    display: inline;
+    position: relative;
+		background-color: transparent;
+}
+
+.mark::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+		transform: scaleX(0);
+    background: light-dark(var(--mantine-color-yellow-2), var(--mantine-color-yellow-5));
+    transform-origin: left center;
+    animation: growToTheRight 0.5s ease-in 1s 1 normal forwards;
+    z-index: -1;
+}
+.mark:nth-child(2)::before {
+    animation-delay: 1.3s; 
+}
+@keyframes growToTheRight {
+	from {
+        transform: scaleX(0);
+	}
+	to {
+        transform: scaleX(1);
+	}
+}

@@ -2,7 +2,7 @@
 
 import { SlackUserButton } from "@/app/experiences/components/SlackUserButton/SlackUserButton";
 import { countriesData, thingsTable } from "@/db/schema";
-import { Box, Button,Group,InputWrapper, NativeSelect, NumberInput, Select, Space, Stack, Text, Textarea, TextInput, UnstyledButton, useMantineTheme } from "@mantine/core";
+import { Box, Button,Group,InputWrapper, NativeSelect, NumberInput, Select, Space, Stack, Text, Textarea, TextInput, UnstyledButton } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
 import classes from './AddExpForm.module.css'

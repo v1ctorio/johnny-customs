@@ -7,7 +7,6 @@ import React from 'react';
 import { ColorSchemeScript, mantineHtmlProps, MantineProvider } from '@mantine/core';
 import { theme } from '../../theme';
 import { SessionProvider } from 'next-auth/react';
-import { ModalsProvider } from '@mantine/modals';
 
 export const metadata = {
   title: 'Johhny Customs',
@@ -19,14 +18,14 @@ export default function RootLayout({ children }: { children: any }) {
     <html lang="en" {...mantineHtmlProps}>
       <head>
         <ColorSchemeScript />
-        <link rel="shortcut icon" href="/favicon.svg" />
+        <link rel="shortcut icon" href="/passc_yel.jpg" />
         <meta
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
         />
       </head>
-      <body>
-        <MantineProvider theme={theme} defaultColorScheme='dark'>
+      <body style={{minHeight: '100vh', display: 'flex', flexDirection: 'column'}}>
+        <MantineProvider theme={theme} >
         <SessionProvider>
 {children}
           </SessionProvider>        
