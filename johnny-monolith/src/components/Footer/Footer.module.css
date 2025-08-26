@@ -1,5 +1,5 @@
 .footer {
-  position: relative;
+  position: fixed;
   bottom: 0;
   width: 100%;
   background-color: var(--mantine-color-body);
@@ -7,6 +7,11 @@
   margin-top: 120px;
   border-top: 1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5));
 }
+
+.footerContainer {
+  margin-bottom: 120px;
+}
+
 
 .inner {
   display: flex;
