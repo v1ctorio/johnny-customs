@@ -24,6 +24,7 @@
 }
 
 .link {
+  vertical-align: middle;
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -62,4 +63,9 @@
   width: 25px;
   height: 25px;
 	font-size: 18px;
+}
+
+.linkIcon {
+  vertical-align: middle;
+  padding-right: 10px;
 }

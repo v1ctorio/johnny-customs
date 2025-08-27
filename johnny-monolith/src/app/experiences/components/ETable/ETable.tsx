@@ -43,6 +43,7 @@ export function ETable(){
     const rows = data.map(r=>{
      return <TableTr key={r.id}>
         <TableTd>{r.id}</TableTd>
+        <Tooltip label={r.country_full_name}><TableTd>{r.country}</TableTd></Tooltip>
         <TableTd >{r.thing} {r.notes && <Tooltip multiline label={r.notes}><IconNotes style={{verticalAlign:"middle"}} stroke={3} size={12}/></Tooltip>}</TableTd>
         {selectedCurrency==="USD" && <>
         <TableTd><NumberFormatter value={r.declared_value_usd/100} thousandSeparator=" " prefix='$'/></TableTd>
@@ -63,6 +64,7 @@ export function ETable(){
         <TableThead className={`${classes.header}`}>
           <TableTr>
             <TableTh>ID</TableTh>
+            <Tooltip label="Country Code"><TableTh>CC</TableTh></Tooltip>
             <TableTh>Thing</TableTh>
             <TableTh>Declared val.</TableTh>
             <TableTh>Paid</TableTh>
@@ -72,7 +74,7 @@ export function ETable(){
         <TableTbody>{new Array(15).fill(true).map((_,i)=>{
 
           return <TableTr key={i}>
-{new Array(5).fill(true).map((_,i)=> {
+{new Array(6).fill(true).map((_,i)=> {
           return <TableTd key={i}><Skeleton height={22.7} styles={{"root":{"margin": "7px 1px"}}} radius="xl" key={i}/></TableTd>
           })}
           </TableTr>
@@ -92,6 +94,7 @@ export function ETable(){
         <TableThead className={`${classes.header}`}>
           <TableTr>
             <TableTh>ID</TableTh>
+            <Tooltip label="Country Code"><TableTh>CC</TableTh></Tooltip>
             <TableTh>Thing</TableTh>
             <TableTh>Declared val.</TableTh>
             <TableTh>Paid</TableTh>
