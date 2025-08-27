@@ -10,6 +10,9 @@
 
 .footerContainer {
   margin-bottom: 120px;
+  @media (max-width: 600px) {
+    margin-bottom: 160px;
+  }
 }
 
 
@@ -20,13 +23,17 @@
   padding-top: var(--mantine-spacing-xl);
   padding-bottom: var(--mantine-spacing-xl);
 
-  @media (max-width: $mantine-breakpoint-xs) {
+  @media (max-width: 600px) {
+
     flex-direction: column;
   }
 }
 
 .links {
-  @media (max-width: $mantine-breakpoint-xs) {
+  @media (max-width: 600px) {
     margin-top: var(--mantine-spacing-md);
+    justify-self: center;
+    justify-content: center;
+    margin-right: auto;
   }
 }
