@@ -10,7 +10,7 @@ import { SessionProvider } from 'next-auth/react';
 
 export const metadata = {
   title: 'Johhny Customs',
-  description: 'The Hack Club next.js taxes helper!',
+  description: 'Welcome to the Customs Pain Center. The home for all your pain regarding import taxes, customs, and shipping fees.',
 };
 
 export default function RootLayout({ children }: { children: any }) {
