@@ -2,9 +2,10 @@
 
 import classes from './ETable.module.css';
 import { APISubmission } from "@/app/lib/submissions";
-import { Group, NumberFormatter, Pagination, SegmentedControl, Skeleton, Stack, Switch, Table, TableTd, TableTh, TableThead, TableTr, Text, useMantineTheme } from "@mantine/core";
+import { Group, NumberFormatter, Pagination, SegmentedControl, Skeleton, Stack, Table, TableScrollContainer, TableTbody, TableTd, TableTh, TableThead, TableTr, Tooltip, useMantineTheme } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { SlackUserButton } from '../SlackUserButton/SlackUserButton';
+import { IconNotes } from '@tabler/icons-react';
 
 
 const fiftinData: APISubmission[] = new Array(15)
@@ -35,15 +36,14 @@ export function ETable(){
       })
       .catch(e=>{
         console.error("Error fetching submissions:",e)
-        // eslint-disable-next-line no-alert
-        alert("Error fetching submissions. Try to log-in with slack first: "+e.message)
+     //   alert("Error fetching submissions. Try to log-in with slack first: "+e.message)
       })
   },[activePage])
 
     const rows = data.map(r=>{
      return <TableTr key={r.id}>
         <TableTd>{r.id}</TableTd>
-        <TableTd>{r.thing}</TableTd>
+        <TableTd >{r.thing} {r.notes && <Tooltip label={r.notes}><IconNotes style={{verticalAlign:"middle"}} stroke={3} size={12}/></Tooltip>}</TableTd>
         {selectedCurrency==="USD" && <>
         <TableTd><NumberFormatter value={r.declared_value_usd/100} thousandSeparator=" " prefix='$'/></TableTd>
         <TableTd><NumberFormatter value={r.paid_customs_usd/100} thousandSeparator=" " prefix='$'/></TableTd>
@@ -52,12 +52,14 @@ export function ETable(){
         <TableTd><NumberFormatter value={r.declared_value/100} thousandSeparator=" " suffix={` ${r.currency}`}/></TableTd>
         <TableTd><NumberFormatter value={r.paid_customs/100} thousandSeparator=" " suffix={` ${r.currency}`}/></TableTd>
         </> }
-        <TableTd> <SlackUserButton uID={r.submitter}/></TableTd>
+        <TableTd> <SlackUserButton showChevron uID={r.submitter}/></TableTd>
      </TableTr>
     })
 
           if (isLoading) {return (<Stack>
-      <Table miw={600} maw={1400} striped highlightOnHover>
+        <TableScrollContainer minWidth={600}>
+
+      <Table striped highlightOnHover>
         <TableThead className={`${classes.header}`}>
           <TableTr>
             <TableTh>ID</TableTh>
@@ -67,7 +69,7 @@ export function ETable(){
             <TableTh>Author</TableTh>
           </TableTr>
         </TableThead>
-        <Table.Tbody>{new Array(15).fill(true).map((_,i)=>{
+        <TableTbody>{new Array(15).fill(true).map((_,i)=>{
 
           return <TableTr key={i}>
 {new Array(5).fill(true).map((_,i)=> {
@@ -76,15 +78,17 @@ export function ETable(){
           </TableTr>
           
           
-        })}</Table.Tbody>
+        })}</TableTbody>
       </Table>
+        </TableScrollContainer>
 
       <Pagination disabled total={data.length} value={activePage} onChange={setActivePage}/>
       </Stack>)}
 
     return (
       <Stack>
-      <Table miw={600} maw={1400} striped highlightOnHover>
+        <TableScrollContainer minWidth={600}>
+      <Table striped highlightOnHover >
         <TableThead className={`${classes.header}`}>
           <TableTr>
             <TableTh>ID</TableTh>
@@ -94,13 +98,14 @@ export function ETable(){
             <TableTh>Author</TableTh>
           </TableTr>
         </TableThead>
-        <Table.Tbody>{rows}</Table.Tbody>
+        <TableTbody>{rows}</TableTbody>
       </Table>
-
+      </TableScrollContainer>
 <Group justify='space-between'>
       <Pagination total={count} value={activePage} onChange={setActivePage} w={600}/>
       <SegmentedControl withItemsBorders data={['USD','£¥€']} value={selectedCurrency} onChange={setCurrency} styles={{'indicator':{backgroundColor:theme.colors?.blue[9]}}} radius="xl"/>
 </Group>
       </Stack>
+
     )
 }

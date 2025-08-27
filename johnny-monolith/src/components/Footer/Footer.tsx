@@ -6,6 +6,7 @@ import classes from './Footer.module.css';
 
 export default function Footer() {
   return (
+    <div className={classes.footerContainer}>
     <div className={classes.footer}>
       <Container className={classes.inner}>
 				<Group gap={10} justify='flex-start' wrap='nowrap'>
@@ -13,7 +14,7 @@ export default function Footer() {
 					<Text fw={600}> Made by Vic 4 Hack Club</Text>
 
 				</Group>
-        <Group w="200px" ml={"auto"}>
+        <Group w="200px" ml="auto">
         
         <a href="https://hackclub.slack.com/archives/C07JZQHQDBP">
           <Group gap={0} className={classes.links} justify="flex-end" wrap="nowrap">
@@ -36,6 +37,7 @@ export default function Footer() {
         </Group>
 
       </Container>
+    </div>
     </div>
   );
 }
