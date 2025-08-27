@@ -42,3 +42,8 @@
         transform: scaleX(1);
 	}
 }
+
+.container{
+  padding-right: 10px;
+  padding-left: 10px;
+}

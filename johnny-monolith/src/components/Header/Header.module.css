@@ -48,3 +48,10 @@
   padding-bottom: var(--mantine-spacing-xl);
   border-top: 1px solid light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
 }
+
+.mobilelogbutton {
+  margin-left: 10px;
+  margin-right: 10px;
+  height: 50px;
+  width: calc(100% - 20px);
+}
