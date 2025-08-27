@@ -2,7 +2,7 @@
 
 import classes from './ETable.module.css';
 import { APISubmission } from "@/app/lib/submissions";
-import { Group, NumberFormatter, Pagination, SegmentedControl, Skeleton, Stack, Table, TableTd, TableTh, TableThead, TableTr, Tooltip, useMantineTheme } from "@mantine/core";
+import { Group, NumberFormatter, Pagination, SegmentedControl, Skeleton, Stack, Table, TableScrollContainer, TableTbody, TableTd, TableTh, TableThead, TableTr, Tooltip, useMantineTheme } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { SlackUserButton } from '../SlackUserButton/SlackUserButton';
 import { IconNotes } from '@tabler/icons-react';
@@ -67,7 +67,7 @@ export function ETable(){
             <TableTh>Author</TableTh>
           </TableTr>
         </TableThead>
-        <Table.Tbody>{new Array(15).fill(true).map((_,i)=>{
+        <TableTbody>{new Array(15).fill(true).map((_,i)=>{
 
           return <TableTr key={i}>
 {new Array(5).fill(true).map((_,i)=> {
@@ -76,7 +76,7 @@ export function ETable(){
           </TableTr>
           
           
-        })}</Table.Tbody>
+        })}</TableTbody>
       </Table>
 
       <Pagination disabled total={data.length} value={activePage} onChange={setActivePage}/>
@@ -84,7 +84,8 @@ export function ETable(){
 
     return (
       <Stack>
-      <Table miw={600} maw={1400} striped highlightOnHover>
+        <TableScrollContainer minWidth={600}>
+      <Table striped highlightOnHover >
         <TableThead className={`${classes.header}`}>
           <TableTr>
             <TableTh>ID</TableTh>
@@ -94,13 +95,14 @@ export function ETable(){
             <TableTh>Author</TableTh>
           </TableTr>
         </TableThead>
-        <Table.Tbody>{rows}</Table.Tbody>
+        <TableTbody>{rows}</TableTbody>
       </Table>
-
+      </TableScrollContainer>
 <Group justify='space-between'>
       <Pagination total={count} value={activePage} onChange={setActivePage} w={600}/>
       <SegmentedControl withItemsBorders data={['USD','£¥€']} value={selectedCurrency} onChange={setCurrency} styles={{'indicator':{backgroundColor:theme.colors?.blue[9]}}} radius="xl"/>
 </Group>
       </Stack>
+
     )
 }
