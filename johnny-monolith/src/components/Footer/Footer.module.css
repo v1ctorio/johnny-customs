@@ -10,6 +10,9 @@
 
 .footerContainer {
   margin-bottom: 120px;
+  @media (max-width: 600px) {
+    margin-bottom: 160px;
+  }
 }
 
 

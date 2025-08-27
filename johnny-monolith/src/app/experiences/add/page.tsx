@@ -5,7 +5,7 @@ import { AddExpForm } from "./components/AddExpForm/AddExpForm";
 
 export default function AddExperience(){
 
-	return <Container>
+	return <Container w="100%">
 		<Title>
 			Add your own experience to the database.
 

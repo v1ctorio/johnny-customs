@@ -43,7 +43,7 @@ export function ETable(){
     const rows = data.map(r=>{
      return <TableTr key={r.id}>
         <TableTd>{r.id}</TableTd>
-        <TableTd >{r.thing} {r.notes && <Tooltip label={r.notes}><IconNotes style={{verticalAlign:"middle"}} stroke={3} size={12}/></Tooltip>}</TableTd>
+        <TableTd >{r.thing} {r.notes && <Tooltip multiline label={r.notes}><IconNotes style={{verticalAlign:"middle"}} stroke={3} size={12}/></Tooltip>}</TableTd>
         {selectedCurrency==="USD" && <>
         <TableTd><NumberFormatter value={r.declared_value_usd/100} thousandSeparator=" " prefix='$'/></TableTd>
         <TableTd><NumberFormatter value={r.paid_customs_usd/100} thousandSeparator=" " prefix='$'/></TableTd>

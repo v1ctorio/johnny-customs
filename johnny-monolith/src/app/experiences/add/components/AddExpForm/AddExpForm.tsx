@@ -74,7 +74,7 @@ form.watch('country',({value})=>{
   };
 
 	return(
-					<Stack w={800}>
+					<Stack maw={800}>
 
 			<form onSubmit={form.onSubmit(handleSubmit)}>
 				
