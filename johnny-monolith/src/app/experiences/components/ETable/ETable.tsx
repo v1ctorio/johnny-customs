@@ -57,7 +57,9 @@ export function ETable(){
     })
 
           if (isLoading) {return (<Stack>
-      <Table miw={600} maw={1400} striped highlightOnHover>
+        <TableScrollContainer minWidth={600}>
+
+      <Table striped highlightOnHover>
         <TableThead className={`${classes.header}`}>
           <TableTr>
             <TableTh>ID</TableTh>
@@ -78,6 +80,7 @@ export function ETable(){
           
         })}</TableTbody>
       </Table>
+        </TableScrollContainer>
 
       <Pagination disabled total={data.length} value={activePage} onChange={setActivePage}/>
       </Stack>)}
