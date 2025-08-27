@@ -35,7 +35,12 @@ export async function createSubmission(insertData:submissionInsert, newThingName
  
   const newRow = (await db.insert(submissionsTable).values(insertData).returning())[0]
 
+  try {
   await dispatchNewRow(newRow, !!newThingName)
+
+  } catch(e) {
+    console.error("Error dispatching submission",e)
+  }
   return newRow
 
 }
