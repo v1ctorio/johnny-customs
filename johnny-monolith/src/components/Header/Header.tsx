@@ -109,7 +109,7 @@ export default function Header({active}:{active?:string} = {active:""}) {
         <Group justify="space-between" h="100%">
 
 <a href="/">
-          <img alt='logo' height={30} width={30} src="/passc_yel.png" />
+          <img alt='logo' height={30} width={30} src="/passc_yel_am.png" />
 
 </a>
 
