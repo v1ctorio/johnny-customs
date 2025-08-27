@@ -46,7 +46,7 @@ export function AddExpForm({submitterID}:{submitterID:string}) {
 				country: "",
 				declared_value: 0,
 				paid_customs: 0,
-				payment_date: null,
+				payment_date: new Date(),
 				notes: ""
 			},
 			validate: {

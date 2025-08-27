@@ -2,9 +2,10 @@
 
 import classes from './ETable.module.css';
 import { APISubmission } from "@/app/lib/submissions";
-import { Group, NumberFormatter, Pagination, SegmentedControl, Skeleton, Stack, Switch, Table, TableTd, TableTh, TableThead, TableTr, Text, useMantineTheme } from "@mantine/core";
+import { Group, NumberFormatter, Pagination, SegmentedControl, Skeleton, Stack, Table, TableTd, TableTh, TableThead, TableTr, Tooltip, useMantineTheme } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { SlackUserButton } from '../SlackUserButton/SlackUserButton';
+import { IconNotes } from '@tabler/icons-react';
 
 
 const fiftinData: APISubmission[] = new Array(15)
@@ -35,15 +36,14 @@ export function ETable(){
       })
       .catch(e=>{
         console.error("Error fetching submissions:",e)
-        // eslint-disable-next-line no-alert
-        alert("Error fetching submissions. Try to log-in with slack first: "+e.message)
+     //   alert("Error fetching submissions. Try to log-in with slack first: "+e.message)
       })
   },[activePage])
 
     const rows = data.map(r=>{
      return <TableTr key={r.id}>
         <TableTd>{r.id}</TableTd>
-        <TableTd>{r.thing}</TableTd>
+        <TableTd >{r.thing} {r.notes && <Tooltip label={r.notes}><IconNotes style={{verticalAlign:"middle"}} stroke={3} size={12}/></Tooltip>}</TableTd>
         {selectedCurrency==="USD" && <>
         <TableTd><NumberFormatter value={r.declared_value_usd/100} thousandSeparator=" " prefix='$'/></TableTd>
         <TableTd><NumberFormatter value={r.paid_customs_usd/100} thousandSeparator=" " prefix='$'/></TableTd>
@@ -52,7 +52,7 @@ export function ETable(){
         <TableTd><NumberFormatter value={r.declared_value/100} thousandSeparator=" " suffix={` ${r.currency}`}/></TableTd>
         <TableTd><NumberFormatter value={r.paid_customs/100} thousandSeparator=" " suffix={` ${r.currency}`}/></TableTd>
         </> }
-        <TableTd> <SlackUserButton uID={r.submitter}/></TableTd>
+        <TableTd> <SlackUserButton showChevron uID={r.submitter}/></TableTd>
      </TableTr>
     })
 

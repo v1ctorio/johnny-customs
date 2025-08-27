@@ -17,9 +17,10 @@ interface SlackUserButtonProps extends UnstyledButtonProps {
 	uID: string;
 	innerPadding?: string;
 	catMode?:boolean;
+	showChevron?:boolean;
 }
 
-export function SlackUserButton({uID, catMode = false, styles, className, innerPadding = ""}:SlackUserButtonProps) {
+export function SlackUserButton({uID, catMode = false, styles, className, innerPadding = "", showChevron = false}:SlackUserButtonProps) {
 	const [user, setUser] = useState<CachetUserData|null>(null)
 	
 	
@@ -48,7 +49,7 @@ export function SlackUserButton({uID, catMode = false, styles, className, innerP
           </Text>
         </div>
 
-        <IconChevronRight size={14} stroke={1.5} />
+{ showChevron && <IconChevronRight size={14} stroke={1.5} /> }
 		</Group>
 	</UnstyledButton>
 }
